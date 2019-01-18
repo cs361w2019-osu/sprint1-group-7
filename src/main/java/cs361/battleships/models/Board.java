@@ -9,7 +9,8 @@ public class Board {
     @JsonProperty private List<Ship> ships = new List<Ship>; 
     @JsonProperty private List<Result> attacks = new List<Result>;
 
-	/*
+    /*
+
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Board() {
