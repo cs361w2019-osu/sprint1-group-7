@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
+    private List<Ship> ships = new List<Ship>; 
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Board() {
-		// TODO Implement
+		// TODO Implement 
 	}
 
 	/*
