@@ -3,11 +3,13 @@ package cs361.battleships.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Result {
-    @JsonProperty private Square square = new Square()
-    @JsonProperty private AttackStatus result = new AttackStatus();
-    @JsonProperty private Ship ship = new Ship();
+    @JsonProperty private Square square;
+    @JsonProperty private AtackStatus result;
+    @JsonProperty private Ship ship;
 
     public Result(){
+        square = new Square();
+        ship = new Ship();
     }
 
     public Result(int x, char y){
@@ -29,7 +31,8 @@ public class Result {
 	}
 
 	public void setShip(Ship ship) {
-		this.ship = ship;
+        this.ship = ship;
+        return;
 	}
 
 	public Square getLocation() {

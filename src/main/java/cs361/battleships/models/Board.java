@@ -5,24 +5,45 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Board {
-    @JsonProperty private List<Ship> ships = new List<Ship>; 
-    @JsonProperty private List<Result> attacks = new List<Result>;
+    @JsonProperty private List<Ship> ships; 
+    @JsonProperty private List<Result> attacks;
 
     /*
 
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Board() {
-		// TODO
+        ships = new ArrayList<Ship>();
+        attacks = new ArrayList<Result>();
 	}
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		// TODO Implement
-		return false;
+        int size = 2;
+        if (ship.getKind().equals("MINESWEEPER")){size = 2;}
+        if (ship.getKind().equals("DESTROYER")){size = 3;}
+        if (ship.getKind().equals("BATTLESHIP")){size = 4;}
+
+        if(isVertical == true){
+            if(x > size){
+                ship.addFeatures(x, y, isVertical, size);
+                ships.add(ship);
+                return true;
+            }
+        }
+        else if(y <= ('J'- (char)size)){
+            ship.addFeatures(x, y, isVertical, size);
+            ships.add(ship);
+            return true;
+        }
+        return false;
 	}
 
 	/*
