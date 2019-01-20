@@ -6,7 +6,12 @@ public class Square {
 	private int row;
 	private char column;
 
-	public Square() {
+	public Square() {}
+	
+	//Copy constructor for deep copying ships during placement
+	public Square(Square square) {
+		row = square.row;
+		column = square.column;
 	}
 
 	public Square(int row, char column) {
