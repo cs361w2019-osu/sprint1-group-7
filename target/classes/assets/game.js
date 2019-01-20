@@ -79,6 +79,7 @@ function cellClick() {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
+	    console.log(game);
         })
     }
 }
