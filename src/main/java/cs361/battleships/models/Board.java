@@ -88,6 +88,7 @@ public class Board {
 		//Track how many ships are remaining to distinguish between SUNK and SURRENDER
 		int shipsRemaining = 0;
 		for(Ship curShip : ships){
+			boolean thisShipHit = false;
 			//Track how many squares this ship has remaining to distinguish HIT vs SUNK
 			int squaresRemaining = 0;
 
@@ -101,12 +102,14 @@ public class Board {
 				}
 
 				if(!squareAlreadyHit){
+					System.out.println("Square row: " + square.getRow() + "\nSquare col: " + square.getColumn());
 					squaresRemaining++;//Count squares that haven't been hit
 				}
 
 				//If a ship is found occupying this location and this spot hasn't already been hit, record it
-				if(square.equals(location)){
+				if(ship == null && square.equals(location)){
 					ship = curShip;
+					thisShipHit = true;
 				}
 			}
 
@@ -114,12 +117,13 @@ public class Board {
 				shipsRemaining++;//Count ships that haven't been sunk
 
 			//If we hit a ship, determine if it's a HIT or SUNK / SURRENDER
-			if(ship != null){
+			if(thisShipHit){
 				if(squaresRemaining > 1){
+					System.out.println("HIT! Remaining: " + squaresRemaining);
 					Result result = new Result(location, AtackStatus.HIT, ship);
 					attacks.add(result);
 					return result;
-				}
+				}//Otherwise, continue looping to figure out how many ships remain to determine if it's a SUNK or SURRENDER
 			}
 		}
 
@@ -137,6 +141,8 @@ public class Board {
 		}
 
 		//If we make it this far, it simply means they did not select a square with a ship on it, a square they've already hit, or a square out of bounds, so it's a miss
+		Result result = new Result(location, AtackStatus.MISS, ship);
+		attacks.add(result);
 		return new Result(location, AtackStatus.MISS, ship);
 
 	}
