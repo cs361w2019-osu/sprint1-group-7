@@ -5,8 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Board {
@@ -66,25 +64,22 @@ public class Board {
 		return false;
 	}
 
-	/*
-	   DO NOT change the signature of this method. It is used by the grading scripts.
-	 */
 	public Result attack(int x, char y) {
 		System.out.println("BOARD ATTACK");
 		Square location = new Square(x, y);
 		Ship ship = null;
-		
+
 		//Return invalid if x or y are out of boundaries
 		if(x < 1 || x > 10 || y < 'A' || y > 'J')
 			return new Result(location, AtackStatus.INVALID, ship);
-		
+
 		//Return invalid if they've already hit this square
 		for(Result curResult : attacks){
 			if(curResult.getLocation().equals(location)){
 				return new Result(location, AtackStatus.INVALID, ship);
 			}
 		}
-			
+
 		//Track how many ships are remaining to distinguish between SUNK and SURRENDER
 		int shipsRemaining = 0;
 		for(Ship curShip : ships){
@@ -146,6 +141,10 @@ public class Board {
 		return new Result(location, AtackStatus.MISS, ship);
 
 	}
+
+	/*
+	   DO NOT change the signature of this method. It is used by the grading scripts.
+	 */
 
 	public List<Ship> getShips() {
 		return ships;
