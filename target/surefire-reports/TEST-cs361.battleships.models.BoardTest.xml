@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cs361.battleships.models.BoardTest" time="0.102" tests="6" errors="0" skipped="0" failures="0">
+<testsuite name="cs361.battleships.models.BoardTest" time="0.095" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="10.0.2+13"/>
@@ -59,10 +59,10 @@
     <property name="java.vendor.version" value="18.3"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase name="testSurrender" classname="cs361.battleships.models.BoardTest" time="0.1"/>
-  <testcase name="testRepeatedPlacement" classname="cs361.battleships.models.BoardTest" time="0"/>
+  <testcase name="testSurrender" classname="cs361.battleships.models.BoardTest" time="0.087"/>
+  <testcase name="testRepeatedPlacement" classname="cs361.battleships.models.BoardTest" time="0.006"/>
   <testcase name="testValidPlacement" classname="cs361.battleships.models.BoardTest" time="0.001"/>
-  <testcase name="testInvalidPlacement" classname="cs361.battleships.models.BoardTest" time="0.001"/>
+  <testcase name="testInvalidPlacement" classname="cs361.battleships.models.BoardTest" time="0"/>
   <testcase name="testInvalidAttack" classname="cs361.battleships.models.BoardTest" time="0"/>
-  <testcase name="testRepeatedAttack" classname="cs361.battleships.models.BoardTest" time="0"/>
+  <testcase name="testRepeatedAttack" classname="cs361.battleships.models.BoardTest" time="0.001"/>
 </testsuite>
