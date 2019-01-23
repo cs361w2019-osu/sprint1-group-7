@@ -3,14 +3,14 @@ package cs361.battleships.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Result {
-	private Square location=null;
-	private AtackStatus result;
-	private Ship ship;
 
-	public Result(){
-	}
+	private Square location = null;
+	private AtackStatus result = AtackStatus.INVALID;
+	private Ship ship = null;
 
-	public Result(Square Location,AtackStatus result, Ship ship){
+	public Result(){}
+
+	public Result(Square location, AtackStatus result, Ship ship){
 		this.location = location;
 		this.result = result;
 		this.ship = ship;
