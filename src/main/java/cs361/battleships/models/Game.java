@@ -55,12 +55,12 @@ public class Game {
 
 	private char randCol() {
 		Random rand = new Random();
-		return (char)(rand.nextInt(9)+ 65);
+		return (char)(rand.nextInt(10)+ 65);
 	}
 
 	private int randRow() {
 		Random rand = new Random();
-		return rand.nextInt(9);
+		return rand.nextInt(10) + 1;
 	}
 
 	private boolean randVertical() {
