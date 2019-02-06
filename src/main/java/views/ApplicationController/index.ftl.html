@@ -1,12 +1,12 @@
-<#import "../layout/defaultLayout.ftl.html" as layout> 
-<@layout.myLayout "Home page">    
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "Home page">
 
 
 <h1>The Battleship game</h1>
-
+<div id="ocean">
+</div>
 <table id="opponent" class="battleGrid">
 </table>
-
 <table id="player" class="battleGrid">
 </table>
 
@@ -18,8 +18,9 @@
     -->
     <li><input type="checkbox" id="is_vertical">Vertical</input></li>
 </ul>
-
+<script type="text/javascript" src="/assets/ocean.js"></script>
 <script type="text/javascript" src="/assets/game.js"></script>
+
 <script>
     initGame();
 </script>
