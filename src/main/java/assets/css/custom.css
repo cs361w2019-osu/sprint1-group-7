@@ -2,18 +2,24 @@
 -------------------------------------------------- */
 
 .battleGrid {
+    background:absolute;
+    text-align: center;
     border: 1px solid black;
     border-spacing: 0px;
     margin:  auto;
+    z-index:2;
+    position: relative;
 }
 
 .battleGrid tr {
+    position:static;
     border: 1px solid black;
     height: 30px;
     margin: auto;
 }
 
 .battleGrid td {
+    position:static;
     border: 1px solid black;
     width: 30px;
     margin: auto;
@@ -24,7 +30,7 @@ td:hover {
 }
 
 html{
-    background-image: url("2.png");
+
 }
 
 .placed {
@@ -52,9 +58,10 @@ footer {
 }
 
 ul {
+    background:absolute;
     background-color: white
     position: static;
-    text-align: center;
+    text-align: right;
     position: fixed;
     top: 515px;
     left: 500px;
@@ -70,4 +77,50 @@ h1{
 }
 button:hover{
     background-color: red;
+}
+
+body{
+  height:auto;
+  margin:0;
+}
+
+#ocean{
+
+  background:relative;
+  width:100%;
+  min-height:100%;
+  background-image: -webkit-gradient(
+  linear,
+  left bottom,
+  left top,
+  color-stop(0, rgb(0,50,150)),
+  color-stop(0.50, rgb(0,150,255))
+  );
+}
+
+.wave{
+   z-index:1;
+  background:relative;
+  background-color:#a8e3ff;
+  display:inline-block;
+  height:60%;
+  width:10px;
+  position:absolute;
+  -webkit-animation-name:             dostuff;
+  -webkit-animation-duration:         3s;
+  -webkit-animation-iteration-count:  infinite;
+  -webkit-transition-timing-function: ease-in-out;
+}
+
+
+@-webkit-keyframes dostuff{
+  0%{
+    height:60%;
+  }
+  50%{
+    height:40%;
+  }
+  100%{
+    height:60%;
+  }
 }
