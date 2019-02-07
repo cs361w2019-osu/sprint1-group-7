@@ -7,8 +7,11 @@
     border: 1px solid black;
     border-spacing: 0px;
     margin:  auto;
+<<<<<<< HEAD
+=======
     z-index:2;
     position: relative;
+>>>>>>> master
 }
 
 .battleGrid tr {
@@ -30,7 +33,11 @@ td:hover {
 }
 
 html{
+<<<<<<< HEAD
+    background-image: url("2.png");
+=======
 
+>>>>>>> master
 }
 
 .placed {
@@ -58,10 +65,16 @@ footer {
 }
 
 ul {
+<<<<<<< HEAD
+    background-color: white
+    position: static;
+    text-align: center;
+=======
     background:absolute;
     background-color: white
     position: static;
     text-align: right;
+>>>>>>> master
     position: fixed;
     top: 515px;
     left: 500px;
@@ -77,6 +90,8 @@ h1{
 }
 button:hover{
     background-color: red;
+<<<<<<< HEAD
+=======
 }
 
 body{
@@ -123,4 +138,5 @@ body{
   100%{
     height:60%;
   }
+>>>>>>> master
 }
