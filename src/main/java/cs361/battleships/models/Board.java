@@ -5,8 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Board {
@@ -66,13 +64,87 @@ public class Board {
 		return false;
 	}
 
+	public Result attack(int x, char y) {
+		System.out.println("BOARD ATTACK");
+		Square location = new Square(x, y);
+		Ship ship = null;
+
+		//Return invalid if x or y are out of boundaries
+		if(x < 1 || x > 10 || y < 'A' || y > 'J')
+			return new Result(location, AtackStatus.INVALID, ship);
+
+		//Return invalid if they've already hit this square
+		for(Result curResult : attacks){
+			if(curResult.getLocation().equals(location)){
+				return new Result(location, AtackStatus.INVALID, ship);
+			}
+		}
+
+		//Track how many ships are remaining to distinguish between SUNK and SURRENDER
+		int shipsRemaining = 0;
+		for(Ship curShip : ships){
+			boolean thisShipHit = false;
+			//Track how many squares this ship has remaining to distinguish HIT vs SUNK
+			int squaresRemaining = 0;
+
+			for(Square square : curShip.getOccupiedSquares()){
+				boolean squareAlreadyHit = false;
+				for(Result result : attacks){
+					if(result.getLocation().equals(square)){
+						squareAlreadyHit = true;
+						break;
+					}
+				}
+
+				if(!squareAlreadyHit){
+					System.out.println("Square row: " + square.getRow() + "\nSquare col: " + square.getColumn());
+					squaresRemaining++;//Count squares that haven't been hit
+				}
+
+				//If a ship is found occupying this location and this spot hasn't already been hit, record it
+				if(ship == null && square.equals(location)){
+					ship = curShip;
+					thisShipHit = true;
+				}
+			}
+
+			if(squaresRemaining > 0)
+				shipsRemaining++;//Count ships that haven't been sunk
+
+			//If we hit a ship, determine if it's a HIT or SUNK / SURRENDER
+			if(thisShipHit){
+				if(squaresRemaining > 1){
+					System.out.println("HIT! Remaining: " + squaresRemaining);
+					Result result = new Result(location, AtackStatus.HIT, ship);
+					attacks.add(result);
+					return result;
+				}//Otherwise, continue looping to figure out how many ships remain to determine if it's a SUNK or SURRENDER
+			}
+		}
+
+		if(ship != null){
+			//We hit a ship, but the result is not HIT, so it must have only one square remaining, being either a SUNK or SURRENDER
+			if(shipsRemaining == 1){
+				Result result = new Result(location, AtackStatus.SURRENDER, ship);
+				attacks.add(result);
+				return result;
+			}else{
+				Result result = new Result(location, AtackStatus.SUNK, ship);
+				attacks.add(result);
+				return result;
+			}
+		}
+
+		//If we make it this far, it simply means they did not select a square with a ship on it, a square they've already hit, or a square out of bounds, so it's a miss
+		Result result = new Result(location, AtackStatus.MISS, ship);
+		attacks.add(result);
+		return new Result(location, AtackStatus.MISS, ship);
+
+	}
+
 	/*
 	   DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
-	public Result attack(int x, char y) {
-		Result ack = new Result(x,y);
-		return ack;
-	}
 
 	public List<Ship> getShips() {
 		return ships;

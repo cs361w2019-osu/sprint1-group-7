@@ -1,5 +1,7 @@
 package cs361.battleships.models;
 
+import java.util.Objects;
+
 @SuppressWarnings("unused")
 public class Square {
 
@@ -33,5 +35,22 @@ public class Square {
 
 	public void setRow(int row) {
 		this.row = row;
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if (o == this)
+			return true;
+		if (!(o instanceof Square))
+			return false;
+
+		Square square = (Square) o;
+
+		return row == square.row && column == square.column;
+	}
+
+	@Override
+	public int hashCode(){
+		return Objects.hash(row, column);
 	}
 }
