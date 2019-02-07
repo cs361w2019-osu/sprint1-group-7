@@ -1,12 +1,18 @@
 /* Add additional stylesheets below
 -------------------------------------------------- */
 
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 .battleGrid {
     background:absolute;
     text-align: center;
     border: 1px solid black;
     border-spacing: 0px;
-    margin:  auto;
+    margin: auto;
     z-index:2;
     position: relative;
 }
@@ -23,6 +29,12 @@
     border: 1px solid black;
     width: 30px;
     margin: auto;
+}
+
+.inputRow {
+	display: flex;
+	flex-direction: row;
+	margin-top: 5px;
 }
 
 td:hover {
@@ -59,7 +71,7 @@ footer {
 
 ul {
     background:absolute;
-    background-color: white
+    background-color: white;
     position: static;
     text-align: right;
     position: fixed;
