@@ -19,16 +19,20 @@
 
 .battleGrid tr {
     position:static;
-    border: 1px solid black;
     height: 30px;
-    margin: auto;
+    width: 30px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .battleGrid td {
     position:static;
-    border: 1px solid black;
+    border: 1px solid;
+    border-color: black;
     width: 30px;
-    margin: auto;
+    height: 30px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .inputRow {
@@ -93,11 +97,147 @@ button:hover{
 
 body{
   height:auto;
+  background: #a8e3ff;
   margin:0;
 }
 
-#ocean{
+.minev0.occupied{
+    background-image: url("../frtm.jpg");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    border: 0px;
+}
 
+.minev1.occupied{
+    border: 0px;
+    background-image: url("../bckm.jpg");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    
+}
+
+.mine0.occupied{
+    background-image: url("../frtm.jpg");
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    border: 0px;
+    -webkit-transform: rotate(-90deg);
+}
+
+.mine1.occupied{
+    background-image: url("../bckm.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+    -webkit-transform: rotate(-90deg);
+}
+
+.batt0.occupied{
+    background-image: url("../batf.jpg");
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    border: 0px;
+    -webkit-transform: rotate(-90deg);
+}
+
+.batt1.occupied{
+    background-image: url("../midb.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+    -webkit-transform: rotate(-90deg);
+}
+
+.batt2.occupied{
+    background-image: url("../mid2b.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+    -webkit-transform: rotate(-90deg);
+}
+
+.batt3.occupied{
+    background-image: url("../bckb.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+    -webkit-transform: rotate(-90deg);
+}
+
+.battv0.occupied{
+    background-image: url("../batf.jpg");
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    border: 0px;
+}
+
+.battv1.occupied{
+    background-image: url("../midb.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+}
+
+.battv2.occupied{
+    background-image: url("../mid2b.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+}
+
+.battv3.occupied{
+    background-image: url("../bckb.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+}
+
+.destv0.occupied{
+    background-image: url("../topd.jpg");
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    border: 0px;
+}
+
+.destv1.occupied{
+    background-image: url("../midd.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+}
+
+.destv2.occupied{
+    background-image: url("../bckd.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+}
+
+.dest0.occupied{
+    background-image: url("../topd.jpg");
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    border: 0px;
+    -webkit-transform: rotate(-90deg);
+}
+
+.dest1.occupied{
+    background-image: url("../midd.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+    -webkit-transform: rotate(-90deg);
+}
+
+.dest2.occupied{
+    background-image: url("../bckd.jpg");
+    background-size: 30px 30px;
+    border: 0px;
+    background-repeat: no-repeat;
+    -webkit-transform: rotate(-90deg);
+}
+
+#ocean{
   background:relative;
   width:100%;
   min-height:100%;
@@ -113,7 +253,7 @@ body{
 .wave{
    z-index:1;
   background:relative;
-  background-color:#a8e3ff;
+  background-color: white;
   display:inline-block;
   height:60%;
   width:10px;
