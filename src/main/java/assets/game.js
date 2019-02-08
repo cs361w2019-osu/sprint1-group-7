@@ -28,6 +28,7 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "SURRENDER")
             alert(surrenderText);
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("occupied");
     });
 }
 
@@ -40,11 +41,29 @@ function redrawGrid() {
         return;
     }
 
-    game.playersBoard.ships.forEach((ship) => {console.log("count"); ship.occupiedSquares.forEach((square) => {
-        document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
-    })});
+    game.playersBoard.ships.forEach((ship) => {
+        console.log("count"); 
+        for(var i=0; i < ship.occupiedSquares.length; i++){classAssigner(ship.occupiedSquares, i, ship.kind);}
+    });
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
+}
+
+function classAssigner(square, i, kind){
+    var vert = 0;
+    var sq = document.getElementById("player").rows[square[i].row-1].cells[square[i].column.charCodeAt(0) - 'A'.charCodeAt(0)]
+    if((i == (square.length -1) && square[i].column != square[i-1].column) || (i != (square.length-1)) && square[i].column != square[i+1].column){vert = 1;}
+    if(vert){
+        if(kind == "BATTLESHIP"){sq.classList.add("batt" + i);}
+        else if(kind == "DESTROYER"){sq.classList.add("dest" + i);}
+        else{sq.classList.add("mine" + i);}
+    }
+    else{
+        if(kind == "BATTLESHIP"){sq.classList.add("battv" + i);}
+        else if(kind == "DESTROYER"){sq.classList.add("destv" + i);}
+        else{sq.classList.add("minev" + i);}
+    }
+    sq.classList.add("occupied");
 }
 
 var oldListener;
@@ -76,11 +95,12 @@ function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {
+
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
             redrawGrid();
             placedShips++;
-	    toggleShipType();
+	        toggleShipType();
             if (placedShips == 3) {
                 isSetup = false;
                 registerCellListener((e) => {});
