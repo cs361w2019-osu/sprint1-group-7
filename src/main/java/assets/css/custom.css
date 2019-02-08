@@ -36,6 +36,51 @@
 	flex-direction: row;
 	margin-top: 5px;
 }
+.inputCol {
+    z-index:2;
+    display: block;
+    position: fixed;
+    top: 500px;
+    left: 1200px;
+}
+
+a.Menu {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    background-color: black;
+}
+
+a.HowToPlay {
+    text-align: center;
+    background-color: black;
+    margin-top: 1px;
+}
+a.restartGame{
+    display: block;
+    text-align: center;
+    background-color: black;
+    margin-top: 1px;
+}
+a.Exit {
+    display: block;
+    text-align: center;
+    background-color: black;
+    margin-top: 1px;
+}
+
+a.HowToPlay:hover{
+     background-color: orange;
+     font-weight: bold;
+ }
+ a.restartGame:hover{
+     background-color: orange;
+     font-weight: bold;
+ }
+ a.Exit:hover{
+     background-color: orange;
+     font-weight: bold;
+ }
 
 td:hover {
     background-color: gray;
@@ -102,7 +147,7 @@ body{
   width:100%;
   min-height:100%;
   background-image: -webkit-gradient(
-  linear,
+  linear;
   left bottom,
   left top,
   color-stop(0, rgb(0,50,150)),
