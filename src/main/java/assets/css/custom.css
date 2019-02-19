@@ -94,7 +94,11 @@ html{
 
 }
 
-.placed {
+#sonarContainer{
+	display: none;
+}
+
+.placed, .empty {
     background-color: gray;
 }
 
@@ -158,7 +162,7 @@ body{
     background-image: url("../bckm.jpg");
     background-size: 100%;
     background-repeat: no-repeat;
-    
+
 }
 
 .mine0.occupied{

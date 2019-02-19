@@ -3,6 +3,7 @@ var placedShips = 0;
 var game;
 var shipType = "BATTLESHIP";
 var vertical;
+var sonarRemaining = 2;
 
 function makeGrid(table, isPlayer) {
     for (i=0; i<10; i++) {
@@ -25,10 +26,16 @@ function markHits(board, elementId, surrenderText) {
             className = "hit";
         else if (attack.result === "SUNK")
             className = "hit"
+        else if (attack.result === "FOUND")
+            className = "occupied"
+        else if (attack.result === "EMPTY")
+            className = "empty"
         else if (attack.result === "SURRENDER")
             alert(surrenderText);
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("occupied");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("miss");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("empty");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
     });
 }
 
@@ -42,7 +49,7 @@ function redrawGrid() {
     }
 
     game.playersBoard.ships.forEach((ship) => {
-        console.log("count"); 
+        console.log("count");
         for(var i=0; i < ship.occupiedSquares.length; i++){classAssigner(ship.occupiedSquares, i, ship.kind);}
     });
     markHits(game.opponentsBoard, "opponent", "You won the game");
@@ -104,14 +111,26 @@ function cellClick() {
             if (placedShips == 3) {
                 isSetup = false;
                 registerCellListener((e) => {});
+                document.getElementById("verticalContainer").style.display = "none";
+                document.getElementById("sonarContainer").style.display = "block";
             }
         });
-    } else {
+    } else if(!document.getElementById("is_sonar").checked) {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
-	    console.log(game);
+      	    console.log(game);
         })
+    } else {
+        sendXhr("POST", "/sonar", {game: game, x: row, y: col}, function(data) {
+            game = data;
+            redrawGrid();
+            sonarRemaining--;
+            if(sonarRemaining == 0){
+              document.getElementById("is_sonar").checked = false;
+              document.getElementById("sonarContainer").style.display = "none";
+            }
+        });
     }
 }
 
@@ -178,5 +197,3 @@ function initGame() {
         game = data;
     });
 };
-
-
