@@ -22,10 +22,20 @@ public enum AtackStatus {
 	 * surrender).
 	 */
 	SURRENDER,
-	
+
 	/**
 	 * The result if the coordinates given are invalid.
 	 */
 	INVALID,
+
+	/**
+	 * The result of the sonar coordinates says this ship square has been found
+	 */
+	FOUND,
+
+	/**
+	 * The result of the sonar coordinates says this square is empty
+	 */
+	EMPTY,
 
 }

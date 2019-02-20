@@ -13,13 +13,13 @@ public class Game {
 
 	/*
 	   DO NOT change the signature of this method. It is used by the grading scripts.
-	   
+
 	   Let's pay attention to something here; the same ship is passed into playersBoard.placeShip and
 	   opponentsBoard.placeShip. This is a large issue. While Java is pass by value, that value is a
 	   shallow copy by default. The only way to get around this is to define either a clone() or
 	   copy constructor for ships, and then pass that into the Board.placeShip() function. In reality,
 	   this function is badly designed, but it cannot be changed due to the grading scripts.
-	   
+
 	   */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		boolean successful = playersBoard.placeShip(new Ship(ship), x, y, isVertical);
@@ -51,6 +51,10 @@ public class Game {
 		} while(opponentAttackResult.getResult() == INVALID);//The only thing keeping the opponent from attacking correctly was a bug, should have been ==, not !=
 
 		return true;
+	}
+
+	public boolean sonar (int x, char y) {
+			return opponentsBoard.sonar(x, y);
 	}
 
 	private char randCol() {

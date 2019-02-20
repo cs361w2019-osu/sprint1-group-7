@@ -7,8 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Random;
 
+import java.lang.Math;
+
 public class Board {
-	private List<Ship> ships; 
+	private List<Ship> ships;
 	private List<Result> attacks;
 
 	/*
@@ -74,72 +76,132 @@ public class Board {
 			return new Result(location, AtackStatus.INVALID, ship);
 
 		//Return invalid if they've already hit this square
+		boolean resultExists = false;
 		for(Result curResult : attacks){
 			if(curResult.getLocation().equals(location)){
-				return new Result(location, AtackStatus.INVALID, ship);
+					resultExists = true;
+					if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY)
+							return new Result(location, AtackStatus.INVALID, ship);
 			}
 		}
 
 		//Track how many ships are remaining to distinguish between SUNK and SURRENDER
 		int shipsRemaining = 0;
 		for(Ship curShip : ships){
-			boolean thisShipHit = false;
-			//Track how many squares this ship has remaining to distinguish HIT vs SUNK
-			int squaresRemaining = 0;
+				boolean thisShipHit = false;
+				//Track how many squares this ship has remaining to distinguish HIT vs SUNK
+				int squaresRemaining = 0;
 
-			for(Square square : curShip.getOccupiedSquares()){
-				boolean squareAlreadyHit = false;
-				for(Result result : attacks){
-					if(result.getLocation().equals(square)){
-						squareAlreadyHit = true;
-						break;
-					}
+				for(Square square : curShip.getOccupiedSquares()){
+						boolean squareAlreadyHit = false;
+						for(Result result : attacks){
+								if(result.getLocation().equals(square) && result.getResult() != AtackStatus.FOUND){
+										squareAlreadyHit = true;
+										break;
+								}
+						}
+
+						if(!squareAlreadyHit){
+								squaresRemaining++;//Count squares that haven't been hit
+						}
+
+						//If a ship is found occupying this location and this spot hasn't already been hit, record it
+						if(ship == null && square.equals(location)){
+								ship = curShip;
+								thisShipHit = true;
+						}
 				}
 
-				if(!squareAlreadyHit){
-					System.out.println("Square row: " + square.getRow() + "\nSquare col: " + square.getColumn());
-					squaresRemaining++;//Count squares that haven't been hit
+				if(squaresRemaining > 0)
+						shipsRemaining++;//Count ships that haven't been sunk
+
+				//If we hit a ship, determine if it's a HIT or SUNK / SURRENDER
+				if(thisShipHit){
+						if(squaresRemaining > 1){
+								System.out.println("HIT! Remaining: " + squaresRemaining);
+								Result result = new Result(location, AtackStatus.HIT, ship);
+								if (resultExists) {
+										for (Result curResult : attacks) {
+												if (curResult.getLocation().equals(location)) {
+														curResult.setResult(AtackStatus.HIT);
+														curResult.setShip(ship);
+														break;
+												}
+										}
+								} else {
+										attacks.add(result);
+								}
+								return result;
+						}//Otherwise, continue looping to figure out how many ships remain to determine if it's a SUNK or SURRENDER
 				}
-
-				//If a ship is found occupying this location and this spot hasn't already been hit, record it
-				if(ship == null && square.equals(location)){
-					ship = curShip;
-					thisShipHit = true;
-				}
-			}
-
-			if(squaresRemaining > 0)
-				shipsRemaining++;//Count ships that haven't been sunk
-
-			//If we hit a ship, determine if it's a HIT or SUNK / SURRENDER
-			if(thisShipHit){
-				if(squaresRemaining > 1){
-					System.out.println("HIT! Remaining: " + squaresRemaining);
-					Result result = new Result(location, AtackStatus.HIT, ship);
-					attacks.add(result);
-					return result;
-				}//Otherwise, continue looping to figure out how many ships remain to determine if it's a SUNK or SURRENDER
-			}
 		}
 
+		Result result;
 		if(ship != null){
 			//We hit a ship, but the result is not HIT, so it must have only one square remaining, being either a SUNK or SURRENDER
-			if(shipsRemaining == 1){
-				Result result = new Result(location, AtackStatus.SURRENDER, ship);
-				attacks.add(result);
-				return result;
-			}else{
-				Result result = new Result(location, AtackStatus.SUNK, ship);
-				attacks.add(result);
-				return result;
-			}
+				if(shipsRemaining == 1){
+						result = new Result(location, AtackStatus.SURRENDER, ship);
+				}else{
+						result = new Result(location, AtackStatus.SUNK, ship);
+				}
+		} else {
+				result = new Result(location, AtackStatus.MISS, ship);
 		}
 
-		//If we make it this far, it simply means they did not select a square with a ship on it, a square they've already hit, or a square out of bounds, so it's a miss
-		Result result = new Result(location, AtackStatus.MISS, ship);
-		attacks.add(result);
-		return new Result(location, AtackStatus.MISS, ship);
+		if (resultExists) {
+				for (Result curResult : attacks) {
+						if (curResult.getLocation().equals(location)) {
+								curResult.setResult(result.getResult());
+								curResult.setShip(ship);
+								break;
+						}
+				}
+		} else {
+				attacks.add(result);
+		}
 
+		return result;
+	}
+
+	public boolean sonar (int x, char y) {
+			if (x <= 2 || x >= 9 || y <= 'B' || y >= 'I')
+					return false;
+
+			for(int row = x - 2; row <= x + 2; row++) {
+					for(int col = y - 2 + Math.abs(x - row); col <= y + 2 - Math.abs(x - row); col++) {
+							boolean occupied = false;
+							boolean captain = false;
+							for(Ship ship : ships) {
+									for(Square square : ship.getOccupiedSquares()) {
+											if(square.getRow() == row && square.getColumn() == col) {
+													occupied = true;
+													captain = ship.checkCaptainsQuarters(square);
+													break;
+											}
+									}
+
+									if(occupied)
+											break;
+							}
+
+							boolean marked = false;
+							boolean miss = false;
+							for(Result result : attacks) {
+									if(result.getLocation().getRow() == row && result.getLocation().getColumn() == col) {
+											marked = true;
+											miss = result.getResult() == AtackStatus.MISS;
+											break;
+									}
+							}
+
+							//If the square has not been marked, or it's marked as a miss but it's a captains quarters, mark it as found / empty accordingly
+							if(!marked || (miss && captain)){
+									attacks.add(new Result(new Square(row, (char) col), occupied ? AtackStatus.FOUND : AtackStatus.EMPTY, null));
+							}
+					}
+			}
+
+			return true;
 	}
 
 	/*
