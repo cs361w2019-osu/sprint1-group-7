@@ -25,7 +25,7 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "hit"
+            className = "sink"
         else if (attack.result === "FOUND")
             className = "occupied"
         else if (attack.result === "EMPTY")

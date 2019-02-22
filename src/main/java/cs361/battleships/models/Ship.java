@@ -15,10 +15,9 @@ public class Ship{
 	//Should be 0 in minesweeper, 1 in destroyer, and 2 in battleship class. Should be used in function which takes a square as a parameter and determines
 	//...if this ship's captains quarters is at that exact location. Returns true if so, false otherwise.
 
-    // protected int captainsIdx;
-	// protected int captiansHealth = 2;//Decrement when hit
-
-	public Ship(){
+    protected int captainsIdx;
+    
+    public Ship(){
 		occupiedSquares = new ArrayList<Square>();
 	}
 
@@ -30,18 +29,8 @@ public class Ship{
         return size;
     }
 
-    public void setShipType(String shipType){
-        this.shipType = shipType;
-    }
-
-    public void setSize(int size){
-        this.size = size;
-    }
-
 	public boolean checkCaptainsQuarters(Square location){
-			//TODO after implementing captains quarters / child classes, uncomment the below line and delete return false;
-			// return location.equals(occupiedSquares[captainsIdx]);
-			return false;
+        return location.equals(occupiedSquares.get(captainsIdx));
 	}
 
 	public void addFeatures(int row, char col, boolean isV){
@@ -67,15 +56,12 @@ public class Ship{
     
     public static Ship makeShip(String kind){
         if(kind.equals("MINESWEEPER")){
-            System.out.println("count3");
             return new Minesweeper();
         }
         else if(kind.equals("BATTLESHIP")){
-            System.out.println("count2");
             return new Battleship();
         }
         else{ 
-            System.out.println("count1");
             return new Destroyer();
         }
     }

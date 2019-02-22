@@ -41,12 +41,12 @@ public class Square {
 	public boolean equals(Object o){
 		if (o == this)
 			return true;
-		if (!(o instanceof Square))
-			return false;
+        if (!(o instanceof Square)){
+            return false;
+        }
 
 		Square square = (Square) o;
-
-		return row == square.row && column == square.column;
+		return (this.row == square.row && this.column == square.column);
 	}
 
 	@Override
@@ -54,3 +54,4 @@ public class Square {
 		return Objects.hash(row, column);
 	}
 }
+ 
