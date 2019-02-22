@@ -1,7 +1,5 @@
 package cs361.battleships.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Result {
 
 	private Square location = null;

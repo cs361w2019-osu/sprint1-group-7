@@ -1,7 +1,5 @@
 package cs361.battleships.models;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import static cs361.battleships.models.AtackStatus.*;
@@ -21,8 +19,8 @@ public class Game {
 	   this function is badly designed, but it cannot be changed due to the grading scripts.
 
 	   */
-	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		boolean successful = playersBoard.placeShip(new Ship(ship), x, y, isVertical);
+	public boolean placeShip(String kind, int x, char y, boolean isVertical) {
+		boolean successful = playersBoard.placeShip(Ship.makeShip(kind), x, y, isVertical);
 		if (!successful)
 			return false;
 
@@ -30,7 +28,7 @@ public class Game {
 		do {
 			// AI places random ships, so it might try and place overlapping ships
 			// let it try until it gets it right
-			opponentPlacedSuccessfully = opponentsBoard.placeShip(new Ship(ship), randRow(), randCol(), randVertical());
+			opponentPlacedSuccessfully = opponentsBoard.placeShip(Ship.makeShip(kind), randRow(), randCol(), randVertical());
 		} while (!opponentPlacedSuccessfully);
 
 		return true;

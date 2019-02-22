@@ -26,12 +26,13 @@ public class Board {
 	   DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		int size = ship.calcSize();
+        int size = ship.getSize();
 
 		if(isVertical && x >= 1 && x + size - 1 <= 10){//Vertical and valid placement
 			//Check if any of the squares are occupied by existing ships
 			for(Ship curShip : ships){
-				if(curShip.getKind().equals(ship.getKind())){
+				if(curShip.getShipType().equals(ship.getShipType())){
+                    
 					return false;//No two of same ship type
 				}
 				for(Square square : curShip.getOccupiedSquares()){
@@ -48,26 +49,28 @@ public class Board {
 		else if(!isVertical && y >= 'A' && y + size - 1 <= 'J'){//Horizontal and valid placement
 			//Check if any of the squares are occupied by existing ships
 			for(Ship curShip : ships){
-				if(curShip.getKind().equals(ship.getKind())){
+				if(curShip.getShipType().equals(ship.getShipType())){
 					return false;
 				}
 				for(Square square : curShip.getOccupiedSquares()){
 					int row = square.getRow();
 					char col = square.getColumn();
-					if(row == x && col >= y && col <= y + size - 1)
-						return false;//This square is already occupied
+                    if(row == x && col >= y && col <= y + size - 1){
+                        return false;//This square is already occupied
+                    }
 				}
 			}
 			ship.addFeatures(x, y, isVertical);
-			ships.add(ship);
+            ships.add(ship);
+            
 			return true;
 		}
-
+        
 		return false;
 	}
 
+
 	public Result attack(int x, char y) {
-		System.out.println("BOARD ATTACK");
 		Square location = new Square(x, y);
 		Ship ship = null;
 
@@ -80,7 +83,7 @@ public class Board {
 		for(Result curResult : attacks){
 			if(curResult.getLocation().equals(location)){
 					resultExists = true;
-					if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY)
+					if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY && curResult.getResult() != AtackStatus.OUCH)
 							return new Result(location, AtackStatus.INVALID, ship);
 			}
 		}
@@ -110,57 +113,102 @@ public class Board {
 								ship = curShip;
 								thisShipHit = true;
 						}
-				}
+                }
+                
 
 				if(squaresRemaining > 0)
 						shipsRemaining++;//Count ships that haven't been sunk
 
 				//If we hit a ship, determine if it's a HIT or SUNK / SURRENDER
 				if(thisShipHit){
+                        int bomb = 0;
 						if(squaresRemaining > 1){
-								System.out.println("HIT! Remaining: " + squaresRemaining);
-								Result result = new Result(location, AtackStatus.HIT, ship);
-								if (resultExists) {
+                                Result result;
+                                if(ship.checkCaptainsQuarters(location)){
+
+                                    result = new Result(location, AtackStatus.OUCH, ship);
+                                }    
+                                else{
+								    result = new Result(location, AtackStatus.HIT, ship);
+                                }
+                                if (resultExists) {
 										for (Result curResult : attacks) {
 												if (curResult.getLocation().equals(location)) {
-														curResult.setResult(AtackStatus.HIT);
-														curResult.setShip(ship);
-														break;
+                                                    if(curResult.getResult() == AtackStatus.OUCH){
+                                                        bomb = 1;
+                                                    }
+                                                    else{
+                                                        curResult.setResult(AtackStatus.HIT);
+                                                        curResult.setShip(ship);
+                                                    }
+                                                    break;
 												}
 										}
-								} else {
-										attacks.add(result);
-								}
-								return result;
+                                } 
+                                else {
+									attacks.add(result);
+                                }
+                                if(bomb != 1){
+                                    return result;
+                                }
 						}//Otherwise, continue looping to figure out how many ships remain to determine if it's a SUNK or SURRENDER
 				}
 		}
+                     
+        if(ship == null) {
+            Result res = new Result(location, AtackStatus.MISS, ship);
+            attacks.add(res);
+            return res;
+        }
+		else{
+            if(shipsRemaining == 1){
+                attacks.add(new Result(location, AtackStatus.SURRENDER, ship));
+                return new Result(location, AtackStatus.SURRENDER, ship);
+            }
+       
+        
+            int ouchie = 0;
+            for(Result result : attacks){ 
+                if(result.getLocation().equals(location) && result.getResult() == AtackStatus.OUCH){
+                    ouchie = 1;   
+                }
+            }
 
-		Result result;
-		if(ship != null){
+            if(ouchie == 1){    
+                for(Square square : ship.getOccupiedSquares()){
+                    int found = 0;
+                    for(Result result: attacks){
+                        if(result.getLocation().equals(square)){
+                            result.setResult(AtackStatus.SUNK);
+                            found = 1;
+                        }
+                       
+                    }
+                    if(found == 0){
+                        attacks.add(new Result(square, AtackStatus.SUNK, ship));
+                    }
+                }  
+                return new Result(location, AtackStatus.SUNK, ship);   
+            }
 			//We hit a ship, but the result is not HIT, so it must have only one square remaining, being either a SUNK or SURRENDER
-				if(shipsRemaining == 1){
-						result = new Result(location, AtackStatus.SURRENDER, ship);
-				}else{
-						result = new Result(location, AtackStatus.SUNK, ship);
-				}
-		} else {
-				result = new Result(location, AtackStatus.MISS, ship);
-		}
-
-		if (resultExists) {
-				for (Result curResult : attacks) {
-						if (curResult.getLocation().equals(location)) {
-								curResult.setResult(result.getResult());
-								curResult.setShip(ship);
-								break;
-						}
-				}
-		} else {
-				attacks.add(result);
-		}
-
-		return result;
+				else{
+                    for(Square square : ship.getOccupiedSquares()){
+                        int found = 0;
+                        for(Result result: attacks){
+                            if(result.getLocation().equals(square)){
+                                result.setResult(AtackStatus.SUNK);
+                                found = 1;
+                            }
+                            
+                        }
+                        if(found == 0){
+                            attacks.add(new Result(square, AtackStatus.SUNK, ship));
+                        }
+                    }
+                    return new Result(location, AtackStatus.SUNK, ship);  
+                }
+        } 
+        
 	}
 
 	public boolean sonar (int x, char y) {

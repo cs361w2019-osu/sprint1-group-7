@@ -118,6 +118,10 @@ html{
     background-color: blue;
 }
 
+.ouch {
+    background-color: red;
+}
+
 footer {
     float: right;
 }
