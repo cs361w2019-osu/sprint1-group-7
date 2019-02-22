@@ -9,7 +9,7 @@ import ninja.Results;
 
 @Singleton
 public class ApplicationController {
-
+    
     public Result index() {
         return Results.html();
     }
@@ -21,8 +21,8 @@ public class ApplicationController {
 
     public Result placeShip(Context context, PlacementGameAction g) {
         Game game = g.getGame();
-        Ship ship = new Ship(g.getShipType());
-        boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical());
+        System.out.println("ApplicatController.placeShip");
+        boolean result = game.placeShip(g.getShipType(), g.getActionRow(), g.getActionColumn(), g.isVertical());
         if (result) {
             return Results.json().render(game);
         } else {

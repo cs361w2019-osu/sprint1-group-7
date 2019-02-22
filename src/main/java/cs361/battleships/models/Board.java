@@ -26,12 +26,14 @@ public class Board {
 	   DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		int size = ship.calcSize();
+        System.out.println("Oh shit");
+        int size = ship.getSize();
 
 		if(isVertical && x >= 1 && x + size - 1 <= 10){//Vertical and valid placement
 			//Check if any of the squares are occupied by existing ships
 			for(Ship curShip : ships){
-				if(curShip.getKind().equals(ship.getKind())){
+				if(curShip.getShipType().equals(ship.getShipType())){
+                    
 					return false;//No two of same ship type
 				}
 				for(Square square : curShip.getOccupiedSquares()){
@@ -48,21 +50,24 @@ public class Board {
 		else if(!isVertical && y >= 'A' && y + size - 1 <= 'J'){//Horizontal and valid placement
 			//Check if any of the squares are occupied by existing ships
 			for(Ship curShip : ships){
-				if(curShip.getKind().equals(ship.getKind())){
+				if(curShip.getShipType().equals(ship.getShipType())){
+                    System.out.println("Oh shit");
 					return false;
 				}
 				for(Square square : curShip.getOccupiedSquares()){
 					int row = square.getRow();
 					char col = square.getColumn();
-					if(row == x && col >= y && col <= y + size - 1)
-						return false;//This square is already occupied
+                    if(row == x && col >= y && col <= y + size - 1){
+                        return false;//This square is already occupied
+                    }
 				}
 			}
 			ship.addFeatures(x, y, isVertical);
-			ships.add(ship);
+            ships.add(ship);
+            
 			return true;
 		}
-
+        
 		return false;
 	}
 
@@ -80,7 +85,7 @@ public class Board {
 		for(Result curResult : attacks){
 			if(curResult.getLocation().equals(location)){
 					resultExists = true;
-					if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY)
+					if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY && curResult.getResult() != AtackStatus.OUCH)
 							return new Result(location, AtackStatus.INVALID, ship);
 			}
 		}
@@ -123,6 +128,7 @@ public class Board {
 								if (resultExists) {
 										for (Result curResult : attacks) {
 												if (curResult.getLocation().equals(location)) {
+                                                        //add capn
 														curResult.setResult(AtackStatus.HIT);
 														curResult.setShip(ship);
 														break;

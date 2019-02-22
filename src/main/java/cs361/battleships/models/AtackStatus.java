@@ -36,6 +36,10 @@ public enum AtackStatus {
 	/**
 	 * The result of the sonar coordinates says this square is empty
 	 */
-	EMPTY,
-
+    EMPTY,
+    
+    /**
+     * The result of the captains quatters getting hit
+     */
+    OUCH,
 }
