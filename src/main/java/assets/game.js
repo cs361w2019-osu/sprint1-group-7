@@ -25,13 +25,11 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "sink"
+            className = "hit"
         else if (attack.result === "FOUND")
             className = "occupied"
         else if (attack.result === "EMPTY")
             className = "empty"
-        else if (attack.result === "OUCH")
-            className = "ouch"
         else if (attack.result === "SURRENDER")
             alert(surrenderText);
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("occupied");
@@ -52,7 +50,7 @@ function redrawGrid() {
 
     game.playersBoard.ships.forEach((ship) => {
         console.log("count");
-        for(var i=0; i < ship.size; i++){classAssigner(ship.occupiedSquares, i, ship.shipType);}
+        for(var i=0; i < ship.occupiedSquares.length; i++){classAssigner(ship.occupiedSquares, i, ship.kind);}
     });
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
@@ -105,9 +103,8 @@ function cellClick() {
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {
 
-        sendXhr("POST", "/place", {shipType: shipType, game: game, x: row, y: col, isVertical: vertical}, function(data) {
+        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
-            console.log(data);
             redrawGrid();
             placedShips++;
 	        toggleShipType();
@@ -118,17 +115,13 @@ function cellClick() {
                 document.getElementById("sonarContainer").style.display = "block";
             }
         });
-    } 
-    
-    else if(!document.getElementById("is_sonar").checked) {
+    } else if(!document.getElementById("is_sonar").checked) {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
       	    console.log(game);
         })
-    } 
-    
-    else {
+    } else {
         sendXhr("POST", "/sonar", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
@@ -146,7 +139,6 @@ function sendXhr(method, url, data, handler) {
     req.addEventListener("load", function(event) {
         if (req.status != 200) {
             alert("Cannot complete the action");
-            console.log("Status" + req.status);
             return;
         }
         handler(JSON.parse(req.responseText));

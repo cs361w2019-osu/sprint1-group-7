@@ -29,12 +29,16 @@
 <div class="inputCol">
     <a class="Menu" style="color: white">Menu</a>
     <a href="https://cs361fall2018.github.io/docs/battleship-requirements.pdf" target="_blank" class="HowToPlay" style="color:white">How To Play</a>
-    <!--<a href="http://localhost:8080/" class="restartGame" style="color:white">Restart</a>
-    <a href="about:blank" class="Exit" style="color:white">Exit</a>-->
+    <div target="_blank" onclick="myFunction()" class="restartGame" style="color:white">Restart</div>
+    <a href="about:blank" class="Exit" style="color:white">Exit</a>
 </div>
 <script type="text/javascript" src="/assets/ocean.js"></script>
 <script type="text/javascript" src="/assets/game.js"></script>
-
+<script>
+    function myFunction(){
+        location.reload();
+    }
+</script>
 <script>
     initGame();
 </script>
