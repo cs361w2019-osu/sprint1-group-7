@@ -1,45 +1,47 @@
 package cs361.battleships.models;
 
+//No unit tests necessary, just an enum
 public enum AtackStatus {
 
 	/**
-	 * The result if an attack results in a miss.
-	 */
+	* The result if an attack results in a miss.
+	*/
 	MISS,
 
 	/**
-	 * The result if an attack results in a hit on an enemy ship.
-	 */
+	* The result if an attack results in a hit on an enemy ship.
+	*/
 	HIT,
 
 	/**
-	 * THe result if an attack sinks the enemy ship
-	 */
+	* THe result if an attack sinks the enemy ship
+	*/
 	SUNK,
 
 	/**
-	 * The results if an attack results in the defeat of the opponent (a
-	 * surrender).
-	 */
+	* The results if an attack results in the defeat of the opponent (a
+	* surrender).
+	*/
 	SURRENDER,
 
 	/**
-	 * The result if the coordinates given are invalid.
-	 */
+	* The result if the coordinates given are invalid.
+	*/
 	INVALID,
 
 	/**
-	 * The result of the sonar coordinates says this ship square has been found
-	 */
+	* The result of the sonar coordinates says this ship square has been found
+	*/
 	FOUND,
 
 	/**
-	 * The result of the sonar coordinates says this square is empty
-	 */
-    EMPTY,
-    
-    /**
-     * The result of the captains quatters getting hit
-     */
-    OUCH,
+	* The result of the sonar coordinates says this square is empty
+	*/
+	EMPTY,
+
+	/**
+	* The result of attacking a captain's quarters for the first time.
+	*/
+	OUCH
+
 }
