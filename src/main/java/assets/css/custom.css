@@ -329,3 +329,41 @@ body{
     height:60%;
   }
 }
+.game-menu *{
+  transition:all 0.6s;
+  -webkit-transition:all 0.6s;
+  font-family:'Courier', Monospace	;
+
+}
+.game-menu{
+  box-shadow: 0px 3px 20px black;
+  list-style-type:none;
+  max-width:160px;
+  width:100%;
+  position: fixed;
+  z-index: 2;
+  top:500px;
+  left:1200px;
+
+
+}
+.game-menu li{
+  text-align:center;
+
+}
+.game-menu li a{
+  text-decoration:none;
+  color:white;
+   background-color:#FF4500;
+  display:block;
+  width:calc(100% - 40px);
+  padding:22px;
+  left:0px;
+}
+.game-menu li a:hover{
+  padding:33px;
+  margin-left:-8px;
+  background-color:#3A3A36;
+  box-shadow:0px 0px 20px black;
+}
+}
