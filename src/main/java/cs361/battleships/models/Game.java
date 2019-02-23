@@ -1,5 +1,7 @@
 package cs361.battleships.models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static cs361.battleships.models.AtackStatus.*;
@@ -10,33 +12,34 @@ public class Game {
 	private Board opponentsBoard = new Board();
 
 	/*
-	   DO NOT change the signature of this method. It is used by the grading scripts.
+	DO NOT change the signature of this method. It is used by the grading scripts.
 
-	   Let's pay attention to something here; the same ship is passed into playersBoard.placeShip and
-	   opponentsBoard.placeShip. This is a large issue. While Java is pass by value, that value is a
-	   shallow copy by default. The only way to get around this is to define either a clone() or
-	   copy constructor for ships, and then pass that into the Board.placeShip() function. In reality,
-	   this function is badly designed, but it cannot be changed due to the grading scripts.
+	Let's pay attention to something here; the same ship is passed into playersBoard.placeShip and
+	opponentsBoard.placeShip. This is a large issue. While Java is pass by value, that value is a
+	shallow copy by default. The only way to get around this is to define either a clone() or
+	copy constructor for ships, and then pass that into the Board.placeShip() function. In reality,
+	this function is badly designed, but it cannot be changed due to the grading scripts.
 
-	   */
-	public boolean placeShip(String kind, int x, char y, boolean isVertical) {
-		boolean successful = playersBoard.placeShip(Ship.makeShip(kind), x, y, isVertical);
+	*/
+	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
+		System.out.println("Ship type: " + ship.getShipType());
+		boolean successful = playersBoard.placeShip(ship.clone(), x, y, isVertical);
 		if (!successful)
-			return false;
+		return false;
 
 		boolean opponentPlacedSuccessfully;
 		do {
 			// AI places random ships, so it might try and place overlapping ships
 			// let it try until it gets it right
-			opponentPlacedSuccessfully = opponentsBoard.placeShip(Ship.makeShip(kind), randRow(), randCol(), randVertical());
+			opponentPlacedSuccessfully = opponentsBoard.placeShip(ship.clone(), randRow(), randCol(), randVertical());
 		} while (!opponentPlacedSuccessfully);
 
 		return true;
 	}
 
 	/*
-	   DO NOT change the signature of this method. It is used by the grading scripts.
-	   */
+	DO NOT change the signature of this method. It is used by the grading scripts.
+	*/
 	public boolean attack(int x, char  y) {
 		Result playerAttack = opponentsBoard.attack(x, y);
 		if (playerAttack.getResult() == INVALID) {
@@ -52,7 +55,7 @@ public class Game {
 	}
 
 	public boolean sonar (int x, char y) {
-			return opponentsBoard.sonar(x, y);
+		return opponentsBoard.sonar(x, y);
 	}
 
 	private char randCol() {

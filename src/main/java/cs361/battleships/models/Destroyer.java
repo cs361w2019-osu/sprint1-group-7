@@ -1,14 +1,23 @@
 package cs361.battleships.models;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Destroyer extends Ship{
     public Destroyer(){
-        Random rand = new Random();
-        captainsIdx = rand.nextInt(2);
-        occupiedSquares = new ArrayList<Square>();
+        super();
         shipType = "DESTROYER";
-        size = 3;
+        Random random = new Random();
+        captainsIdx = random.nextInt(3);
     }
-};
+
+    public Ship clone() {
+        Ship ship = new Destroyer();
+        ship.occupiedSquares = new ArrayList<Square>();
+        for(Square square : occupiedSquares){
+            ship.occupiedSquares.add(new Square(square));
+        }
+        ship.shipType = shipType;
+        return ship;
+    }
+}
