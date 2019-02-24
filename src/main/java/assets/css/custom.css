@@ -60,7 +60,7 @@ a.HowToPlay {
 	background-color: black;
 	margin-top: 1px;
 }
-a.restartGame{
+.restartGame{
 	display: block;
 	text-align: center;
 	background-color: black;
@@ -77,10 +77,10 @@ a.HowToPlay:hover{
 	background-color: orange;
 	font-weight: bold;
 }
-a.restartGame:hover{
+/*.restartGame:hover{
 	background-color: orange;
 	font-weight: bold;
-}
+}*/
 a.Exit:hover{
 	background-color: orange;
 	font-weight: bold;
@@ -91,7 +91,7 @@ td:hover {
 }
 
 html{
-
+    background-image: url("b1.jpg")
 }
 
 #sonarContainer{
