@@ -20,21 +20,34 @@ function makeGrid(table, isPlayer) {
 function markHits(board, elementId, surrenderText) {
     board.attacks.forEach((attack) => {
         let className;
-        if (attack.result === "MISS")
+        if (attack.result === "MISS"){
             className = "miss";
-        else if (attack.result === "HIT")
+        }else if (attack.result === "HIT"){
             className = "hit";
-        else if (attack.result === "SUNK")
-            className = "hit"
-        else if (attack.result === "FOUND")
+
+        }else if (attack.result === "SUNK"){
+            className = "sink"
+            if (document.getElementById("sonarContainer").style.display != "block"){
+                document.getElementById("sonarContainer").style.display = "block";
+            }
+        }else if (attack.result === "FOUND"){
             className = "occupied"
-        else if (attack.result === "EMPTY")
+        }else if (attack.result === "EMPTY"){
             className = "empty"
-        else if (attack.result === "SURRENDER")
+
+        }else if(attack.result === "OUCH"){
+            className = "ouch"
+        }else if (attack.result === "SURRENDER"){
+            className = "sink"
+
             alert(surrenderText);
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("occupied");
+        }
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("miss");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("hit");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("sink");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("occupied");
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("empty");
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.remove("ouch");
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
     });
 }
@@ -50,24 +63,26 @@ function redrawGrid() {
 
     game.playersBoard.ships.forEach((ship) => {
         console.log("count");
-        for(var i=0; i < ship.occupiedSquares.length; i++){classAssigner(ship.occupiedSquares, i, ship.kind);}
+
+        for(var i=0; i < ship.occupiedSquares.length; i++){classAssigner(ship.occupiedSquares, i, ship.shipType);}
+
     });
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
 }
 
-function classAssigner(square, i, kind){
+function classAssigner(square, i, shipType){
     var vert = 0;
     var sq = document.getElementById("player").rows[square[i].row-1].cells[square[i].column.charCodeAt(0) - 'A'.charCodeAt(0)]
     if((i == (square.length -1) && square[i].column != square[i-1].column) || (i != (square.length-1)) && square[i].column != square[i+1].column){vert = 1;}
     if(vert){
-        if(kind == "BATTLESHIP"){sq.classList.add("batt" + i);}
-        else if(kind == "DESTROYER"){sq.classList.add("dest" + i);}
+        if(shipType == "BATTLESHIP"){sq.classList.add("batt" + i);}
+        else if(shipType == "DESTROYER"){sq.classList.add("dest" + i);}
         else{sq.classList.add("mine" + i);}
     }
     else{
-        if(kind == "BATTLESHIP"){sq.classList.add("battv" + i);}
-        else if(kind == "DESTROYER"){sq.classList.add("destv" + i);}
+        if(shipType == "BATTLESHIP"){sq.classList.add("battv" + i);}
+        else if(shipType == "DESTROYER"){sq.classList.add("destv" + i);}
         else{sq.classList.add("minev" + i);}
     }
     sq.classList.add("occupied");
@@ -89,13 +104,13 @@ function registerCellListener(f) {
 }
 
 function toggleShipType() {
-	if(shipType == "BATTLESHIP"){
-		shipType = "DESTROYER";
-		registerCellListener(place(3));
-	}else if(shipType == "DESTROYER"){
-		shipType = "MINESWEEPER";
-		registerCellListener(place(2));
-	}
+    if(shipType == "BATTLESHIP"){
+        shipType = "DESTROYER";
+        registerCellListener(place(3));
+    }else if(shipType == "DESTROYER"){
+        shipType = "MINESWEEPER";
+        registerCellListener(place(2));
+    }
 }
 
 function cellClick() {
@@ -107,19 +122,18 @@ function cellClick() {
             game = data;
             redrawGrid();
             placedShips++;
-	        toggleShipType();
+            toggleShipType();
             if (placedShips == 3) {
                 isSetup = false;
                 registerCellListener((e) => {});
                 document.getElementById("verticalContainer").style.display = "none";
-                document.getElementById("sonarContainer").style.display = "block";
             }
         });
     } else if(!document.getElementById("is_sonar").checked) {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
-      	    console.log(game);
+            console.log(game);
         })
     } else {
         sendXhr("POST", "/sonar", {game: game, x: row, y: col}, function(data) {
@@ -127,8 +141,8 @@ function cellClick() {
             redrawGrid();
             sonarRemaining--;
             if(sonarRemaining == 0){
-              document.getElementById("is_sonar").checked = false;
-              document.getElementById("sonarContainer").style.display = "none";
+                document.getElementById("is_sonar").checked = false;
+                document.getElementById("sonarContainer").style.display = "none";
             }
         });
     }
@@ -179,20 +193,6 @@ function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     registerCellListener(place(4));
-    /*
-    document.getElementById("place_minesweeper").addEventListener("click", function(e) {
-        shipType = "MINESWEEPER";
-       registerCellListener(place(2));
-    });
-    document.getElementById("place_destroyer").addEventListener("click", function(e) {
-        shipType = "DESTROYER";
-       registerCellListener(place(3));
-    });
-    document.getElementById("place_battleship").addEventListener("click", function(e) {
-        shipType = "BATTLESHIP";
-       registerCellListener(place(4));
-    });
-    */
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
     });

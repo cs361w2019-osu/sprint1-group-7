@@ -14,32 +14,30 @@ public class Board {
 	private List<Result> attacks;
 
 	/*
-
-	   DO NOT change the signature of this method. It is used by the grading scripts.
-	 */
+	DO NOT change the signature of this method. It is used by the grading scripts.
+	*/
 	public Board() {
 		ships = new ArrayList<Ship>();
 		attacks = new ArrayList<Result>();
 	}
 
 	/*
-	   DO NOT change the signature of this method. It is used by the grading scripts.
-	 */
+	DO NOT change the signature of this method. It is used by the grading scripts.
+	*/
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-        int size = ship.getSize();
+		int size = ship.calcSize();
 
 		if(isVertical && x >= 1 && x + size - 1 <= 10){//Vertical and valid placement
 			//Check if any of the squares are occupied by existing ships
 			for(Ship curShip : ships){
 				if(curShip.getShipType().equals(ship.getShipType())){
-                    
 					return false;//No two of same ship type
 				}
 				for(Square square : curShip.getOccupiedSquares()){
 					int row = square.getRow();
 					char col = square.getColumn();
 					if(col == y && row >= x && row <= x + size - 1)
-						return false;//This square is already occupied
+					return false;//This square is already occupied
 				}
 			}
 			ship.addFeatures(x, y, isVertical);
@@ -55,20 +53,111 @@ public class Board {
 				for(Square square : curShip.getOccupiedSquares()){
 					int row = square.getRow();
 					char col = square.getColumn();
-                    if(row == x && col >= y && col <= y + size - 1){
-                        return false;//This square is already occupied
-                    }
+					if(row == x && col >= y && col <= y + size - 1)
+					return false;//This square is already occupied
 				}
 			}
 			ship.addFeatures(x, y, isVertical);
-            ships.add(ship);
-            
+			ships.add(ship);
 			return true;
 		}
-        
+
 		return false;
 	}
 
+	//Checks if a square is a captain's quarters. Used for
+	//checking if an attack location has already been attacked
+	//and resulted in a miss, but it is not a captains quarters.
+	//In this case, it is invalid. If it is a captains quarters,
+	//it should sink the ship.
+	private boolean checkCaptainsQuarters(Square location){
+		for(Ship ship : ships){
+			for(Square square : ship.getOccupiedSquares()){
+				if(square.equals(location)){
+					return ship.checkCaptainsQuarters(location);
+				}
+			}
+		}
+		return false;
+	}
+
+	//This function sinks / marks as SUNK the remaining squares of a ship
+	//when the captains quarters is sunk
+	private void sinkShip(Ship ship, Square captainsQuarters){
+		for(Square square : ship.getOccupiedSquares()){
+			if(square.equals(captainsQuarters)){
+				continue;
+			}
+			boolean exists = false;
+			for(Result curResult : attacks){
+				if(curResult.getLocation().equals(square)){
+					exists = true;
+					curResult.setResult(AtackStatus.SUNK);
+				}
+			}
+			if(!exists){
+				attacks.add(new Result(square, AtackStatus.SUNK, ship));
+			}
+		}
+	}
+
+	private int calcShipsRemaining(){
+		int remaining = 0;
+		for(Ship ship : ships){
+			boolean alive = true;
+			for(Result result : attacks){
+				//A dead ship will have only SUNK and / or SURRENDER squares, so just check the first square
+				if(result.getLocation().equals(ship.getOccupiedSquares().get(0)) && (result.getResult() == AtackStatus.SUNK || result.getResult() == AtackStatus.SURRENDER)){
+					alive = false;
+					break;
+				}
+			}
+
+			if(alive){
+				remaining++;
+			}
+		}
+
+		return remaining;
+	}
+
+	private Ship findShipWithSquare(Square location){
+		Ship ship = null;
+		for(Ship curShip : ships){
+			for(Square square : curShip.getOccupiedSquares()){
+				//If a ship is found occupying this location and this spot hasn't already been hit, record it
+				if(ship == null && square.equals(location)){
+					ship = curShip;//Record that this ship was hit
+					break;
+				}
+			}
+			if(ship != null){
+				break;//Stop checking ships, we found the right one already
+			}
+		}
+
+		return ship;
+	}
+
+	private void updateResult(Result result){
+		boolean found = false;
+		for(Ship ship : ships){
+			for(Result curResult : attacks){
+				if(curResult.getLocation().equals(result.getLocation())){
+					found = true;//Mark found
+					//Update result in board
+					curResult.setResult(result.getResult());
+					curResult.setShip(result.getShip());
+					//No need to update location, it already matches
+					break;
+				}
+			}
+
+			if(found){
+				break;//Stop checking ships, we found the one marked
+			}
+		}
+	}
 
 	public Result attack(int x, char y) {
 		Square location = new Square(x, y);
@@ -76,185 +165,104 @@ public class Board {
 
 		//Return invalid if x or y are out of boundaries
 		if(x < 1 || x > 10 || y < 'A' || y > 'J')
-			return new Result(location, AtackStatus.INVALID, ship);
+		return new Result(location, AtackStatus.INVALID, ship);
 
 		//Return invalid if they've already hit this square
 		boolean resultExists = false;
 		for(Result curResult : attacks){
 			if(curResult.getLocation().equals(location)){
-					resultExists = true;
-					if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY && curResult.getResult() != AtackStatus.OUCH)
-							return new Result(location, AtackStatus.INVALID, ship);
+				resultExists = true;
+				if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY && curResult.getResult() != AtackStatus.OUCH)
+				return new Result(location, AtackStatus.INVALID, ship);
 			}
 		}
 
-		//Track how many ships are remaining to distinguish between SUNK and SURRENDER
-		int shipsRemaining = 0;
-		for(Ship curShip : ships){
-				boolean thisShipHit = false;
-				//Track how many squares this ship has remaining to distinguish HIT vs SUNK
-				int squaresRemaining = 0;
+		//To determine between SUNK vs SURRENDER
+		int shipsRemaining = calcShipsRemaining();
 
-				for(Square square : curShip.getOccupiedSquares()){
-						boolean squareAlreadyHit = false;
-						for(Result result : attacks){
-								if(result.getLocation().equals(square) && result.getResult() != AtackStatus.FOUND){
-										squareAlreadyHit = true;
-										break;
-								}
-						}
+		//Find ship we hit, if we hit any. Otherwise, leave ship NULL
+		ship = findShipWithSquare(location);
 
-						if(!squareAlreadyHit){
-								squaresRemaining++;//Count squares that haven't been hit
-						}
-
-						//If a ship is found occupying this location and this spot hasn't already been hit, record it
-						if(ship == null && square.equals(location)){
-								ship = curShip;
-								thisShipHit = true;
-						}
-                }
-                
-
-				if(squaresRemaining > 0)
-						shipsRemaining++;//Count ships that haven't been sunk
-
-				//If we hit a ship, determine if it's a HIT or SUNK / SURRENDER
-				if(thisShipHit){
-                        int bomb = 0;
-						if(squaresRemaining > 1){
-                                Result result;
-                                if(ship.checkCaptainsQuarters(location)){
-
-                                    result = new Result(location, AtackStatus.OUCH, ship);
-                                }    
-                                else{
-								    result = new Result(location, AtackStatus.HIT, ship);
-                                }
-                                if (resultExists) {
-										for (Result curResult : attacks) {
-												if (curResult.getLocation().equals(location)) {
-                                                    if(curResult.getResult() == AtackStatus.OUCH){
-                                                        bomb = 1;
-                                                    }
-                                                    else{
-                                                        curResult.setResult(AtackStatus.HIT);
-                                                        curResult.setShip(ship);
-                                                    }
-                                                    break;
-												}
-										}
-                                } 
-                                else {
-									attacks.add(result);
-                                }
-                                if(bomb != 1){
-                                    return result;
-                                }
-						}//Otherwise, continue looping to figure out how many ships remain to determine if it's a SUNK or SURRENDER
+		Result result;
+		if(ship != null){
+			if(!ship.checkCaptainsQuarters(location)){
+				result = new Result(location, AtackStatus.HIT, ship);//Not captain's quarters, but valid hit, must be a HIT.
+			}else{
+				ship.takeCaptainDamage();//Reduce captains quarters health.
+				if(ship.getCaptainsHealth() == 0){//If captain is dead
+					result = new Result(location, shipsRemaining == 1 ? AtackStatus.SURRENDER : AtackStatus.SUNK, ship);//Either sink or surrender
+					sinkShip(ship, location);//Sink remaining squares / mark as hit for this ship
+				}else{
+					result = new Result(location, AtackStatus.OUCH, ship);//Still has health, mark as a MISS
 				}
+			}
+		} else {
+			result = new Result(location, AtackStatus.MISS, ship);//Mark as a MISS
 		}
-                     
-        if(ship == null) {
-            Result res = new Result(location, AtackStatus.MISS, ship);
-            attacks.add(res);
-            return res;
-        }
-		else{
-            if(shipsRemaining == 1){
-                attacks.add(new Result(location, AtackStatus.SURRENDER, ship));
-                return new Result(location, AtackStatus.SURRENDER, ship);
-            }
-       
-        
-            int ouchie = 0;
-            for(Result result : attacks){ 
-                if(result.getLocation().equals(location) && result.getResult() == AtackStatus.OUCH){
-                    ouchie = 1;   
-                }
-            }
 
-            if(ouchie == 1){    
-                for(Square square : ship.getOccupiedSquares()){
-                    int found = 0;
-                    for(Result result: attacks){
-                        if(result.getLocation().equals(square)){
-                            result.setResult(AtackStatus.SUNK);
-                            found = 1;
-                        }
-                       
-                    }
-                    if(found == 0){
-                        attacks.add(new Result(square, AtackStatus.SUNK, ship));
-                    }
-                }  
-                return new Result(location, AtackStatus.SUNK, ship);   
-            }
-			//We hit a ship, but the result is not HIT, so it must have only one square remaining, being either a SUNK or SURRENDER
-				else{
-                    for(Square square : ship.getOccupiedSquares()){
-                        int found = 0;
-                        for(Result result: attacks){
-                            if(result.getLocation().equals(square)){
-                                result.setResult(AtackStatus.SUNK);
-                                found = 1;
-                            }
-                            
-                        }
-                        if(found == 0){
-                            attacks.add(new Result(square, AtackStatus.SUNK, ship));
-                        }
-                    }
-                    return new Result(location, AtackStatus.SUNK, ship);  
-                }
-        } 
-        
+		//If the attack result already exists (i.e. is FOUND or EMPTY or a captains quarters MISS), update it
+		if (resultExists) {
+			updateResult(result);
+		} else {
+			attacks.add(result);//Otherwise, add new result
+		}
+
+		return result;
 	}
 
 	public boolean sonar (int x, char y) {
-			if (x <= 2 || x >= 9 || y <= 'B' || y >= 'I')
-					return false;
+		if (x <= 2 || x >= 9 || y <= 'B' || y >= 'I')//Return false if out of bounds
+		return false;
 
-			for(int row = x - 2; row <= x + 2; row++) {
-					for(int col = y - 2 + Math.abs(x - row); col <= y + 2 - Math.abs(x - row); col++) {
-							boolean occupied = false;
-							boolean captain = false;
-							for(Ship ship : ships) {
-									for(Square square : ship.getOccupiedSquares()) {
-											if(square.getRow() == row && square.getColumn() == col) {
-													occupied = true;
-													captain = ship.checkCaptainsQuarters(square);
-													break;
-											}
-									}
+		//Return false if they haven't sunk a ship yet, so they cannot use sonar:
+		if(calcShipsRemaining() == 3){
+			return false;
+		}
 
-									if(occupied)
-											break;
-							}
+		//Go through all five rows of diamond pattern
+		for(int row = x - 2; row <= x + 2; row++) {
+			for(int col = y - 2 + Math.abs(x - row); col <= y + 2 - Math.abs(x - row); col++) {//Go through correct column amount (1, 2, 3, 2, 1) for diamond pattern
+				Square location = new Square(row, (char) col);
 
-							boolean marked = false;
-							boolean miss = false;
-							for(Result result : attacks) {
-									if(result.getLocation().getRow() == row && result.getLocation().getColumn() == col) {
-											marked = true;
-											miss = result.getResult() == AtackStatus.MISS;
-											break;
-									}
-							}
-
-							//If the square has not been marked, or it's marked as a miss but it's a captains quarters, mark it as found / empty accordingly
-							if(!marked || (miss && captain)){
-									attacks.add(new Result(new Square(row, (char) col), occupied ? AtackStatus.FOUND : AtackStatus.EMPTY, null));
-							}
+				Ship ship = null;
+				for(Ship curShip : ships) {
+					for(Square square : curShip.getOccupiedSquares()) {
+						if(square.equals(location)) {
+							ship = curShip;
+							break;//Stop checking ship's squares, we already know it's occupied
+						}
 					}
-			}
 
-			return true;
+					if(ship != null)
+					break;//Double break
+				}
+
+				boolean marked = false;
+				boolean ouch = false;
+				for(Result result : attacks) {
+					if(result.getLocation().equals(location)) {
+						marked = true;//This location is already marked
+						ouch = result.getResult() == AtackStatus.OUCH;//This location is marked specifically as a miss
+						break;
+					}
+				}
+
+				//If the square has not been marked, or it's marked as a miss but it's a captains quarters, mark it as found / empty accordingly
+				if(!marked){
+					attacks.add(new Result(location, ship == null ? AtackStatus.EMPTY : AtackStatus.FOUND, ship));
+				}else if(ouch){
+					//Result exists already as an ouch, just update to a FOUND. Only do this if we decide to not display the OUCH classes as red, but rather as blue like a MISS.
+					// updateResult(new Result(location, AtackStatus.FOUND, ship));
+				}
+			}
+		}
+
+		return true;
 	}
 
 	/*
-	   DO NOT change the signature of this method. It is used by the grading scripts.
-	 */
+	DO NOT change the signature of this method. It is used by the grading scripts.
+	*/
 
 	public List<Ship> getShips() {
 		return ships;

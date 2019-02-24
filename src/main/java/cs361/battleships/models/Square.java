@@ -9,49 +9,50 @@ public class Square {
 	private char column;
 
 	public Square() {}
-	
-	//Copy constructor for deep copying ships during placement
-	public Square(Square square) {
-		row = square.row;
-		column = square.column;
-	}
 
-	public Square(int row, char column) {
-		this.row = row;
-		this.column = column;
-	}
+		//Copy constructor for deep copying ships during placement
+		public Square(Square square) {
+			row = square.row;
+			column = square.column;
+		}
 
-	public char getColumn() {
-		return column;
-	}
+		public Square(int row, char column) {
+			this.row = row;
+			this.column = column;
+		}
 
-	public void setColumn(char column) {
-		this.column = column;
-	}
-	
-	public int getRow() {
-		return row;
-	}
+		public char getColumn() {
+			return column;
+		}
 
-	public void setRow(int row) {
-		this.row = row;
-	}
+		public void setColumn(char column) {
+			this.column = column;
+		}
 
-	@Override
-	public boolean equals(Object o){
-		if (o == this)
-			return true;
-        if (!(o instanceof Square)){
-            return false;
-        }
+		public int getRow() {
+			return row;
+		}
 
-		Square square = (Square) o;
-		return (this.row == square.row && this.column == square.column);
-	}
+		public void setRow(int row) {
+			this.row = row;
+		}
 
-	@Override
-	public int hashCode(){
-		return Objects.hash(row, column);
+		@Override
+		public boolean equals(Object o){
+			if (o == this){
+				return true;
+			}
+			if (!(o instanceof Square)){
+				return false;
+			}
+
+			Square square = (Square) o;
+
+			return row == square.row && column == square.column;
+		}
+
+		@Override
+		public int hashCode(){
+			return Objects.hash(row, column);
+		}
 	}
-}
- 
