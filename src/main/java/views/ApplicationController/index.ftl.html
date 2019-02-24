@@ -28,13 +28,18 @@
 
 <div class="game-menu">
     <li><a href="https://cs361fall2018.github.io/docs/battleship-requirements.pdf">How to Play</a></li>
-    <!--<li><a href="http://localhost:8080/">Restart Game </a></li>-->
+    <li><a target="_blank" onclick="myFunction()" class="restartGame" style="color:white">Restart</a></li>
     <li><a href="https://github.com/cs361w2019-osu/sprint1-group-7">GitHub Repo</a></li>
+    <li><a href="about:blank" class="Exit" style="color:white">Exit</a></li>
 </div>
 
 <script type="text/javascript" src="/assets/ocean.js"></script>
 <script type="text/javascript" src="/assets/game.js"></script>
-
+<script>
+    function myFunction(){
+        location.reload();
+    }
+</script>
 <script>
     initGame();
 </script>
