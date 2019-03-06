@@ -240,4 +240,13 @@ public class Board {
 		return new Bomb();
 		//}
 	}
+
+	protected boolean shipSunk(Ship ship) {
+		for(Result result : attacks) {
+			if(result.getLocation().equals(ship.getOccupiedSquares().get(0))) {
+				return result.getResult() == AtackStatus.SUNK || result.getResult() == AtackStatus.SURRENDER;
+			}
+		}
+		return false;
+	}
 }
