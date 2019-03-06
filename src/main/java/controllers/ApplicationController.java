@@ -14,13 +14,14 @@ public class ApplicationController {
     public Result index() {
         return Results.html();
     }
-    
+
     public Result newGame() {
         Game g = new Game();
         return Results.json().render(g);
     }
 
     public Result placeShip(Context context, PlacementGameAction g) {
+        System.out.println("Placing");
         Game game = g.getGame();
         Ship ship = ShipFactory.createShip(g.getShipType());
         boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical());

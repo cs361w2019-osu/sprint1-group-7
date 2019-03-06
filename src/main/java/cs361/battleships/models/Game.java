@@ -22,7 +22,6 @@ public class Game {
 
 	*/
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		System.out.println("Ship type: " + ship.getShipType());
 		boolean successful = playersBoard.placeShip(ship.clone(), x, y, isVertical);
 		if (!successful)
 		return false;

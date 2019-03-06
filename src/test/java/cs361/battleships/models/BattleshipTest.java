@@ -14,10 +14,10 @@ public class BattleshipTest {
 			assertTrue(b.getCaptainsIdx() >= 0 && b.getCaptainsIdx() <= 3);
 		}
 		b.addFeatures(1, 'A', false);
-		assertTrue(b.getCaptainsHealth() == 2);
-		b.takeCaptainDamage();
-		assertTrue(b.getCaptainsHealth() == 1);
-		assertTrue(b.checkCaptainsQuarters(b.getOccupiedSquares().get(b.getCaptainsIdx())));
+		assertTrue(b.getOccupiedSquares().get(b.getCaptainsIdx()).getHealth() == 2);
+		b.getOccupiedSquares().get(b.getCaptainsIdx()).takeDamage();
+		assertTrue(b.getOccupiedSquares().get(b.getCaptainsIdx()).getHealth() == 1);
+		assertTrue(b.checkCaptainsQuarters(b.getOccupiedSquares().get(b.getCaptainsIdx()).getLocation()));
 	}
 
 	@Test

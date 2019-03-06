@@ -13,9 +13,9 @@ public class Destroyer extends Ship{
 
     public Ship clone() {
         Ship ship = new Destroyer();
-        ship.occupiedSquares = new ArrayList<Square>();
-        for(Square square : occupiedSquares){
-            ship.occupiedSquares.add(new Square(square));
+        ship.occupiedSquares = new ArrayList<ShipSquare>();
+        for(ShipSquare square : occupiedSquares){
+            ship.occupiedSquares.add(new ShipSquare(new Square(square.getLocation()), square.getHealth()));
         }
         ship.shipType = shipType;
         return ship;

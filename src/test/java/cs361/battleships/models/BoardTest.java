@@ -27,7 +27,7 @@ public class BoardTest {
 
 	@Test
 	public void testSonar() {
-		for(int test = 0; test < 10; test++){
+		for(int k = 0; k < 10; k++){
 			Board board = new Board();
 			assertTrue(board.placeShip(ShipFactory.createShip("MINESWEEPER"), 10, 'A', false));
 			assertTrue(board.placeShip(ShipFactory.createShip("DESTROYER"), 9, 'A', false));
