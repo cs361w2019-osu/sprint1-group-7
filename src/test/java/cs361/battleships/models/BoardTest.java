@@ -13,25 +13,15 @@ public class BoardTest {
 		Board b = new Board();
 		assertTrue(b.placeShip(ShipFactory.createShip("MINESWEEPER"), 10, 'A', false));
 		assertTrue(b.placeShip(ShipFactory.createShip("DESTROYER"), 9, 'A', false));
-		assertTrue(b.attack(0, 'A').getResult() == AtackStatus.INVALID);
-		assertTrue(b.attack(1, 'A').getResult() == AtackStatus.MISS);
-		assertTrue(b.attack(1, 'A').getResult() == AtackStatus.INVALID);
+		assertFalse(b.determineWeapon().attack(b, 0, 'A'));
+		assertTrue(b.determineWeapon().attack(b, 1, 'A'));
+		assertTrue(b.determineWeapon().attack(b, 1, 'A'));
 		for(int i = 0; i < 2; i++){
-			AtackStatus status = b.attack(10, (char) ('A' + i)).getResult();
-			assertTrue(status == AtackStatus.HIT || status == AtackStatus.OUCH);
-			if(status == AtackStatus.OUCH){
-				assertTrue(b.attack(10, (char) ('A' + i)).getResult() == AtackStatus.SUNK);
-				break;
-			}
+			assertTrue(b.determineWeapon().attack(b, 10, (char) ('A' + i)));
 		}
 
 		for(int i = 0; i < 3; i++){
-			AtackStatus status = b.attack(9, (char) ('A' + i)).getResult();
-			assertTrue(status == AtackStatus.HIT || status == AtackStatus.OUCH);
-			if(status == AtackStatus.OUCH){
-				assertTrue(b.attack(9, (char) ('A' + i)).getResult() == AtackStatus.SURRENDER);
-				break;
-			}
+			assertTrue(b.determineWeapon().attack(b, 9, (char) ('A' + i)));
 		}
 	}
 
@@ -43,14 +33,10 @@ public class BoardTest {
 		assertTrue(board.placeShip(ShipFactory.createShip("BATTLESHIP"), 1, 'A', false));
 		assertFalse(board.sonar(8, 'C'));//Has not destroyed a ship yet, invalid.
 		AtackStatus status;
-		assertTrue(( status = board.attack(9, 'C').getResult()) == AtackStatus.HIT || status == AtackStatus.OUCH);
+		board.determineWeapon().attack(board, 9, 'C');
 		for(int i = 0; i < 2; i++){
-			status = board.attack(10, (char) ('A' + i)).getResult();
-			assertTrue(status == AtackStatus.HIT || status == AtackStatus.OUCH);
-			if(status == AtackStatus.OUCH){
-				assertTrue(board.attack(10, (char) ('A' + i)).getResult() == AtackStatus.SUNK);
-				break;
-			}
+			board.determineWeapon().attack(board, 10, (char) ('A' + i));
+			board.determineWeapon().attack(board, 10, (char) ('A' + i));//attack twice just in case a captain
 		}
 		assertTrue(board.sonar(8, 'C'));//Has destroyed a ship, valid.
 		assertFalse(board.sonar(9, 'C'));//Out of bounds

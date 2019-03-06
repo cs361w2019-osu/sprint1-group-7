@@ -41,15 +41,15 @@ public class Game {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	*/
 	public boolean attack(int x, char  y) {
-		Result playerAttack = opponentsBoard.attack(x, y);
-		if (playerAttack.getResult() == INVALID) {
+		boolean playerAttack = opponentsBoard.determineWeapon().attack(opponentsBoard, x, y);
+		if (!playerAttack) {
 			return false;
 		}
 
-		Result opponentAttackResult;
+		boolean opponentAttackResult;
 		do {
-			opponentAttackResult = playersBoard.attack(randRow(), randCol());
-		} while(opponentAttackResult.getResult() == INVALID);//The only thing keeping the opponent from attacking correctly was a bug, should have been ==, not !=
+			opponentAttackResult = playersBoard.determineWeapon().attack(playersBoard, randRow(), randCol());
+		} while(!opponentAttackResult);
 
 		return true;
 	}
