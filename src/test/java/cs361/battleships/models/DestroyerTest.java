@@ -14,10 +14,10 @@ public class DestroyerTest {
 			assertTrue(d.getCaptainsIdx() >= 0 && d.getCaptainsIdx() <= 2);
 		}
 		d.addFeatures(1, 'A', false);
-		assertTrue(d.getCaptainsHealth() == 2);
-		d.takeCaptainDamage();
-		assertTrue(d.getCaptainsHealth() == 1);
-		assertTrue(d.checkCaptainsQuarters(d.getOccupiedSquares().get(d.getCaptainsIdx())));
+		assertTrue(d.getOccupiedSquares().get(d.getCaptainsIdx()).getHealth() == 2);
+		d.getOccupiedSquares().get(d.getCaptainsIdx()).takeDamage();
+		assertTrue(d.getOccupiedSquares().get(d.getCaptainsIdx()).getHealth() == 1);
+		assertTrue(d.checkCaptainsQuarters(d.getOccupiedSquares().get(d.getCaptainsIdx()).getLocation()));
 	}
 
 	@Test

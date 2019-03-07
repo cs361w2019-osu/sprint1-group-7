@@ -32,7 +32,6 @@ public class GameTest {
 	@Test
 	public void testSonar() {
 		Game g = new Game();
-		assertTrue(g.sonar(3, 'C'));
-		assertTrue(g.getOpponentsBoard().getAttacks().size() == 13);
+		assertFalse(g.sonar(3, 'C'));
 	}
 }

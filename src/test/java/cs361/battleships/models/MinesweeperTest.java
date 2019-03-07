@@ -14,10 +14,10 @@ public class MinesweeperTest {
 			assertTrue(m.getCaptainsIdx() >= 0 && m.getCaptainsIdx() <= 1);
 		}
 		m.addFeatures(1, 'A', false);
-		assertTrue(m.getCaptainsHealth() == 2);
-		m.takeCaptainDamage();
-		assertTrue(m.getCaptainsHealth() == 1);
-		assertTrue(m.checkCaptainsQuarters(m.getOccupiedSquares().get(m.getCaptainsIdx())));
+		assertTrue(m.getOccupiedSquares().get(m.getCaptainsIdx()).getHealth() == 2);
+		m.getOccupiedSquares().get(m.getCaptainsIdx()).takeDamage();
+		assertTrue(m.getOccupiedSquares().get(m.getCaptainsIdx()).getHealth() == 1);
+		assertTrue(m.checkCaptainsQuarters(m.getOccupiedSquares().get(m.getCaptainsIdx()).getLocation()));
 	}
 
 	@Test

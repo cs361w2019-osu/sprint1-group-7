@@ -1,6 +1,7 @@
 package cs361.battleships.models;
 
 //import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,33 +25,30 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship")
 })
 public abstract class Ship{
-	protected List<Square> occupiedSquares;
+
+	protected List<ShipSquare> occupiedSquares;
 	protected String shipType;
 	//Should be 0 in minesweeper, 1 in destroyer, and 2 in battleship class. Should be used in function which takes a square as a parameter and determines
 	//...if this ship's captains quarters is at that exact location. Returns true if so, false otherwise.
 	protected int captainsIdx;
-	protected int captainsHealth = 2;//Decrement when hit
+	// protected int depth;//0 is ocean surface, -1 is submarine
+
 
 	public Ship(){
-		occupiedSquares = new ArrayList<Square>();
+		occupiedSquares = new ArrayList<ShipSquare>();
 	}
 
 	public abstract Ship clone();
 
-	// public boolean checkCaptainsQuarters(Square location){
-	// 		//TODO after implementing captains quarters / child classes, uncomment the below line and delete return false;
-	// 		// return location.equals(occupiedSquares[captainsIdx]);
-	// 		return false;
-	// }
-
 	public boolean checkCaptainsQuarters(Square location){
-		return location.equals(occupiedSquares.get(captainsIdx));
+		return location.equals(occupiedSquares.get(captainsIdx).getLocation());
 	}
 
+	//Remember to override for submarines, as they are oddly shaped
 	public void addFeatures(int row, char col, boolean isV){
 		int size = calcSize();
 		for(int i = 0; i < size; i++){
-			occupiedSquares.add(new Square(row, col));
+			occupiedSquares.add(new ShipSquare(new Square(row, col), i == captainsIdx ? 2 : 1));
 			if(isV) {
 				row += 1;
 			}
@@ -60,11 +58,24 @@ public abstract class Ship{
 		}
 	}
 
-	public List<Square> getOccupiedSquares() {
+	public ShipSquare findSquareWithLocation(Square location){
+		for(ShipSquare square : occupiedSquares) {
+			if(square.getLocation().equals(location))
+				return square;
+		}
+
+		return null;
+	}
+
+	public int calcSize(){
+		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : 0));
+	}
+
+	public List<ShipSquare> getOccupiedSquares() {
 		return occupiedSquares;
 	}
 
-	public void setOccupiedSquares(List<Square> occupiedSquares){
+	public void setOccupiedSquares(List<ShipSquare> occupiedSquares){
 		this.occupiedSquares = occupiedSquares;
 	}
 
@@ -84,19 +95,11 @@ public abstract class Ship{
 		this.captainsIdx = captainsIdx;
 	}
 
-	public int getCaptainsHealth(){
-		return captainsHealth;
-	}
-
-	public void setCaptainsHealth(int captainsHealth){
-		this.captainsHealth = captainsHealth;
-	}
-
-	public void takeCaptainDamage(){
-		captainsHealth--;
-	}
-
-	public int calcSize(){
-		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : 0));
-	}
+	// public int getDepth() {
+	// 	return depth;
+	// }
+	//
+	// public void setDepth (int depth){
+	// 	this.depth = depth;
+	// }
 }

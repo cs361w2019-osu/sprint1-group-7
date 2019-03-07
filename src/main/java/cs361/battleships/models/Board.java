@@ -33,11 +33,12 @@ public class Board {
 				if(curShip.getShipType().equals(ship.getShipType())){
 					return false;//No two of same ship type
 				}
-				for(Square square : curShip.getOccupiedSquares()){
-					int row = square.getRow();
-					char col = square.getColumn();
-					if(col == y && row >= x && row <= x + size - 1)
-					return false;//This square is already occupied
+				for(ShipSquare square : curShip.getOccupiedSquares()){
+					int row = square.getLocation().getRow();
+					char col = square.getLocation().getColumn();
+					if(col == y && row >= x && row <= x + size - 1){
+						return false;//This square is already occupied
+					}
 				}
 			}
 			ship.addFeatures(x, y, isVertical);
@@ -50,11 +51,12 @@ public class Board {
 				if(curShip.getShipType().equals(ship.getShipType())){
 					return false;
 				}
-				for(Square square : curShip.getOccupiedSquares()){
-					int row = square.getRow();
-					char col = square.getColumn();
-					if(row == x && col >= y && col <= y + size - 1)
-					return false;//This square is already occupied
+				for(ShipSquare square : curShip.getOccupiedSquares()){
+					int row = square.getLocation().getRow();
+					char col = square.getLocation().getColumn();
+					if(row == x && col >= y && col <= y + size - 1){
+						return false;//This square is already occupied
+					}
 				}
 			}
 			ship.addFeatures(x, y, isVertical);
@@ -72,8 +74,8 @@ public class Board {
 	//it should sink the ship.
 	private boolean checkCaptainsQuarters(Square location){
 		for(Ship ship : ships){
-			for(Square square : ship.getOccupiedSquares()){
-				if(square.equals(location)){
+			for(ShipSquare square : ship.getOccupiedSquares()){
+				if(square.getLocation().equals(location)){
 					return ship.checkCaptainsQuarters(location);
 				}
 			}
@@ -83,33 +85,33 @@ public class Board {
 
 	//This function sinks / marks as SUNK the remaining squares of a ship
 	//when the captains quarters is sunk
-	private void sinkShip(Ship ship, Square captainsQuarters){
-		for(Square square : ship.getOccupiedSquares()){
-			if(square.equals(captainsQuarters)){
+	protected void sinkShip(Ship ship, Square captainsQuarters){
+		for(ShipSquare square : ship.getOccupiedSquares()){
+			if(square.getLocation().equals(captainsQuarters)){
 				continue;
 			}
+			square.setHealth(0);
 			boolean exists = false;
 			for(Result curResult : attacks){
-				if(curResult.getLocation().equals(square)){
+				if(curResult.getLocation().equals(square.getLocation())){
 					exists = true;
 					curResult.setResult(AtackStatus.SUNK);
+					break;
 				}
 			}
 			if(!exists){
-				attacks.add(new Result(square, AtackStatus.SUNK, ship));
+				attacks.add(new Result(square.getLocation(), AtackStatus.SUNK, ship));
 			}
 		}
 	}
 
-	private int calcShipsRemaining(){
+	protected int calcShipsRemaining(){
 		int remaining = 0;
 		for(Ship ship : ships){
-			boolean alive = true;
-			for(Result result : attacks){
-				//A dead ship will have only SUNK and / or SURRENDER squares, so just check the first square
-				if(result.getLocation().equals(ship.getOccupiedSquares().get(0)) && (result.getResult() == AtackStatus.SUNK || result.getResult() == AtackStatus.SURRENDER)){
-					alive = false;
-					break;
+			boolean alive = false;
+			for(ShipSquare square : ship.getOccupiedSquares()) {
+				if(square.getHealth() > 0){
+					alive = true;
 				}
 			}
 
@@ -121,12 +123,12 @@ public class Board {
 		return remaining;
 	}
 
-	private Ship findShipWithSquare(Square location){
+	protected Ship findShipWithSquare(Square location){
 		Ship ship = null;
 		for(Ship curShip : ships){
-			for(Square square : curShip.getOccupiedSquares()){
+			for(ShipSquare square : curShip.getOccupiedSquares()){
 				//If a ship is found occupying this location and this spot hasn't already been hit, record it
-				if(ship == null && square.equals(location)){
+				if(square.getLocation().equals(location)){
 					ship = curShip;//Record that this ship was hit
 					break;
 				}
@@ -139,7 +141,7 @@ public class Board {
 		return ship;
 	}
 
-	private void updateResult(Result result){
+	protected void updateResult(Result result){
 		boolean found = false;
 		for(Ship ship : ships){
 			for(Result curResult : attacks){
@@ -159,63 +161,13 @@ public class Board {
 		}
 	}
 
-	public Result attack(int x, char y) {
-		Square location = new Square(x, y);
-		Ship ship = null;
-
-		//Return invalid if x or y are out of boundaries
-		if(x < 1 || x > 10 || y < 'A' || y > 'J')
-		return new Result(location, AtackStatus.INVALID, ship);
-
-		//Return invalid if they've already hit this square
-		boolean resultExists = false;
-		for(Result curResult : attacks){
-			if(curResult.getLocation().equals(location)){
-				resultExists = true;
-				if (curResult.getResult() != AtackStatus.FOUND && curResult.getResult() != AtackStatus.EMPTY && curResult.getResult() != AtackStatus.OUCH)
-				return new Result(location, AtackStatus.INVALID, ship);
-			}
-		}
-
-		//To determine between SUNK vs SURRENDER
-		int shipsRemaining = calcShipsRemaining();
-
-		//Find ship we hit, if we hit any. Otherwise, leave ship NULL
-		ship = findShipWithSquare(location);
-
-		Result result;
-		if(ship != null){
-			if(!ship.checkCaptainsQuarters(location)){
-				result = new Result(location, AtackStatus.HIT, ship);//Not captain's quarters, but valid hit, must be a HIT.
-			}else{
-				ship.takeCaptainDamage();//Reduce captains quarters health.
-				if(ship.getCaptainsHealth() == 0){//If captain is dead
-					result = new Result(location, shipsRemaining == 1 ? AtackStatus.SURRENDER : AtackStatus.SUNK, ship);//Either sink or surrender
-					sinkShip(ship, location);//Sink remaining squares / mark as hit for this ship
-				}else{
-					result = new Result(location, AtackStatus.OUCH, ship);//Still has health, mark as a MISS
-				}
-			}
-		} else {
-			result = new Result(location, AtackStatus.MISS, ship);//Mark as a MISS
-		}
-
-		//If the attack result already exists (i.e. is FOUND or EMPTY or a captains quarters MISS), update it
-		if (resultExists) {
-			updateResult(result);
-		} else {
-			attacks.add(result);//Otherwise, add new result
-		}
-
-		return result;
-	}
-
 	public boolean sonar (int x, char y) {
-		if (x <= 2 || x >= 9 || y <= 'B' || y >= 'I')//Return false if out of bounds
-		return false;
+		if (x <= 2 || x >= 9 || y <= 'B' || y >= 'I'){//Return false if out of bounds
+			return false;
+		}
 
 		//Return false if they haven't sunk a ship yet, so they cannot use sonar:
-		if(calcShipsRemaining() == 3){
+		if(ships.size() - calcShipsRemaining() == 0){
 			return false;
 		}
 
@@ -226,8 +178,8 @@ public class Board {
 
 				Ship ship = null;
 				for(Ship curShip : ships) {
-					for(Square square : curShip.getOccupiedSquares()) {
-						if(square.equals(location)) {
+					for(ShipSquare square : curShip.getOccupiedSquares()) {
+						if(square.getLocation().equals(location)) {
 							ship = curShip;
 							break;//Stop checking ship's squares, we already know it's occupied
 						}
@@ -280,5 +232,23 @@ public class Board {
 	public void setAttacks(List<Result> attacks) {
 		this.attacks = attacks;
 		return;
+	}
+
+	//Determine which type of weapon to use depending on number of sunk ships
+	public Weapon determineWeapon(){
+		int sunkShips = ships.size() - calcShipsRemaining();
+		// if(sunkShips >= 2){
+		// 	return new SpaceLaser();
+		// } else {
+		return new Bomb();
+		//}
+	}
+
+	protected boolean shipSunk(Ship ship) {
+		for(ShipSquare square : ship.getOccupiedSquares()){
+			if(square.getHealth() > 0)
+				return false;
+		}
+		return true;
 	}
 }

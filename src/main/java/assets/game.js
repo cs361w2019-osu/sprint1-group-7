@@ -68,8 +68,8 @@ function redrawGrid() {
 
 function classAssigner(square, i, shipType){
     var vert = 0;
-    var sq = document.getElementById("player").rows[square[i].row-1].cells[square[i].column.charCodeAt(0) - 'A'.charCodeAt(0)]
-    if((i == (square.length -1) && square[i].column != square[i-1].column) || (i != (square.length-1)) && square[i].column != square[i+1].column){vert = 1;}
+    var sq = document.getElementById("player").rows[square[i].location.row-1].cells[square[i].location.column.charCodeAt(0) - 'A'.charCodeAt(0)]
+    if((i == (square.length -1) && square[i].location.column != square[i-1].location.column) || (i != (square.length-1)) && square[i].location.column != square[i+1].location.column){vert = 1;}
     if(vert){
         if(shipType == "BATTLESHIP"){sq.classList.add("batt" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("dest" + i);}
@@ -146,6 +146,7 @@ function cellClick() {
 function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
     req.addEventListener("load", function(event) {
+        console.log(game);
         if (req.status != 200) {
             alert("Cannot complete the action");
             return;
