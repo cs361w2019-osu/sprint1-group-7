@@ -18,6 +18,9 @@
 <li><input type="checkbox" id="is_vertical">Vertical</input></li>
 </ul>
 -->
+<div class="inputRow" id="submergedContainer">
+    <input type="checkbox" id="is_submerged" checked>Submerged</input>
+</div>
 <div class="inputRow" id="verticalContainer">
     <input type="checkbox" id="is_vertical">Vertical</input>
 </div>
@@ -26,8 +29,28 @@
     <input type="checkbox" id="is_sonar">Sonar</input>
 </div>
 
+<div class="inputRow" id="moveContainer">
+    <input type="button" id="is_move">move</input>
+</div>
+
+<div class="inputRow" id="northContainer">
+    <input type="button" id="is_north" num="-1">North</input>
+</div>
+
+<div class="inputRow" id="southContainer">
+    <input type="button" id="is_south" num="1">South</input>
+</div>
+
+<div class="inputRow" id="eastContainer">
+    <input type="button" id="is_east"  num="2">East</input>
+</div>
+
+<div class="inputRow" id="westContainer">
+    <input type="button" id="is_west" num="-2">West</input>
+</div>
+
 <div class="game-menu">
-    <li><a href="https://cs361fall2018.github.io/docs/battleship-requirements.pdf">How to Play</a></li>
+    <!-- <li><a href="https://cs361fall2018.github.io/docs/battleship-requirements.pdf">How to Play</a></li> -->
     <li><a target="_blank" onclick="myFunction()" class="restartGame" style="color:white">Restart</a></li>
     <li><a href="https://github.com/cs361w2019-osu/sprint1-group-7">GitHub Repo</a></li>
     <li><a href="about:blank" class="Exit" style="color:white">Exit</a></li>

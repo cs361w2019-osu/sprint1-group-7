@@ -44,8 +44,10 @@
 	z-index:2;
 	display: block;
 	position: fixed;
-	top: 500px;
-	left: 1200px;
+	//top: 500px;
+	//left: 1200px;
+	bottom: 30px;
+	right: 30px;
 }
 
 a.Menu {
@@ -94,7 +96,7 @@ html{
     background-image: url("b1.jpg")
 }
 
-#sonarContainer{
+#sonarContainer, #submergedContainer {
 	display: none;
 }
 
@@ -148,6 +150,83 @@ body{
 	height:auto;
 	background: #a8e3ff;
 	margin:0;
+}
+
+.subv0.occupied{
+
+	background-image: url("../sub1.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	border: 0px;
+}
+
+.subv1.occupied{
+	border: 0px;
+	background-image: url("../sub2.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+}
+
+.subv2.occupied{
+	background-image: url("../sub3.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	border: 0px;
+}
+
+.subv3.occupied{
+	border: 0px;
+	background-image: url("../sub4.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+}
+
+.subv4.occupied{
+	border: 0px;
+	background-image: url("../sub5.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+}
+
+.sub0.occupied{
+	background-image: url("../sub1.jpg");
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	border: 0px;
+	-webkit-transform: rotate(-90deg);
+}
+
+.sub1.occupied{
+	background-image: url("../sub2.jpg");
+	background-size: 30px 30px;
+	border: 0px;
+	background-repeat: no-repeat;
+	-webkit-transform: rotate(-90deg);
+}
+.sub2.occupied{
+	background-image: url("../sub3.jpg");
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	border: 0px;
+	-webkit-transform: rotate(-90deg);
+}
+
+.sub3.occupied{
+	background-image: url("../sub4.jpg");
+	background-size: 30px 30px;
+	border: 0px;
+	background-repeat: no-repeat;
+	-webkit-transform: rotate(-90deg);
+}
+.sub4.occupied{
+	background-image: url("../sub5.jpg");
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	border: 0px;
+	-webkit-transform: rotate(-90deg);
 }
 
 .minev0.occupied{
@@ -338,8 +417,10 @@ body{
 	width:100%;
 	position: fixed;
 	z-index: 2;
-	top:500px;
-	left:1200px;
+	//top:500px;
+	//left:1200px;
+	bottom:30px;
+	right:30px;
 }
 
 .game-menu li{
@@ -361,4 +442,21 @@ body{
 	margin-left:-8px;
 	background-color:#3A3A36;
 	box-shadow:0px 0px 20px black;
+}
+
+#moveContainer{
+	display: none;
+}
+
+#southContainer{
+	display: none;
+}
+#northContainer{
+	display: none;
+}
+#westContainer{
+	display: none;
+}
+#eastContainer{
+	display: none;
 }

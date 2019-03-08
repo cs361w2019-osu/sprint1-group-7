@@ -10,6 +10,7 @@ public class Game {
 
 	private Board playersBoard = new Board();
 	private Board opponentsBoard = new Board();
+	private int sunkShips = 0;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -22,15 +23,17 @@ public class Game {
 
 	*/
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		boolean successful = playersBoard.placeShip(ship.clone(), x, y, isVertical);
-		if (!successful)
-		return false;
+		boolean successful = playersBoard.placeShip(ship, x, y, isVertical);
+		if (!successful){
+			return false;
+		}
 
 		boolean opponentPlacedSuccessfully;
+		Ship opponentShip = ship.opponentCopy();
 		do {
 			// AI places random ships, so it might try and place overlapping ships
 			// let it try until it gets it right
-			opponentPlacedSuccessfully = opponentsBoard.placeShip(ship.clone(), randRow(), randCol(), randVertical());
+			opponentPlacedSuccessfully = opponentsBoard.placeShip(opponentShip, randRow(), randCol(), randVertical());
 		} while (!opponentPlacedSuccessfully);
 
 		return true;
@@ -49,6 +52,8 @@ public class Game {
 		do {
 			opponentAttackResult = playersBoard.determineWeapon().attack(playersBoard, randRow(), randCol());
 		} while(!opponentAttackResult);
+
+		sunkShips = opponentsBoard.sunkenShips();
 
 		return true;
 	}
@@ -78,10 +83,56 @@ public class Game {
 	public Board getOpponentsBoard(){
 		return opponentsBoard;
 	}
+	public int getSunkShips() {
+		return sunkShips;
+	}
 	public void setPlayersBoard(Board b){
 		playersBoard = b;
 	}
 	public void setOpponentsBoard(Board b){
 		opponentsBoard = b;
+	}
+	public void setSunkShips(int sunkShips) {
+		this.sunkShips = sunkShips;
+	}
+
+	public boolean move(int direction){
+		System.out.println("entered game");
+		int rowAdd = 0;
+		int colAdd = 0;
+		boolean bad = false;
+		if(direction == -2){colAdd = -1;}
+		else if(direction == 2){colAdd = 1;}
+		else{rowAdd = direction;}
+		for(Ship curShip : playersBoard.getShips()){
+			if(curShip.canMove(rowAdd, colAdd)){
+				boolean collides = false;
+				for(ShipSquare square : curShip.getOccupiedSquares()) {
+					for(Ship collidingShip : playersBoard.getShips()){
+						if(collidingShip.getShipType().equals(curShip.getShipType())){
+							continue;
+						}
+						if(collidingShip.collides(new Square(square.getLocation().getRow() + rowAdd, (char) (square.getLocation().getColumn() + colAdd)), curShip.getDepth())){
+							collides = true;
+							System.out.println("Colliding ship!");
+							break;
+						}
+					}
+					if(collides){
+						break;
+					}
+				}
+
+				if(!collides) {
+					for(ShipSquare square : curShip.getOccupiedSquares()){
+						Square newLoc = new Square(square.getLocation());
+						newLoc.setRow(newLoc.getRow() + rowAdd);
+						newLoc.setColumn((char)(newLoc.getColumn() + colAdd));
+						square.setLocation(newLoc);
+					}
+				}
+			}
+		}
+		return true;
 	}
 }

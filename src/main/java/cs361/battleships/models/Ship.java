@@ -22,7 +22,8 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = Minesweeper.class, name = "Minesweeper"),
 	@JsonSubTypes.Type(value = Destroyer.class, name = "Destroyer"),
-	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship")
+	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship"),
+	@JsonSubTypes.Type(value = Submarine.class, name = "Submarine")
 })
 public abstract class Ship{
 
@@ -31,24 +32,26 @@ public abstract class Ship{
 	//Should be 0 in minesweeper, 1 in destroyer, and 2 in battleship class. Should be used in function which takes a square as a parameter and determines
 	//...if this ship's captains quarters is at that exact location. Returns true if so, false otherwise.
 	protected int captainsIdx;
-	// protected int depth;//0 is ocean surface, -1 is submarine
+	protected int depth;
 
 
 	public Ship(){
 		occupiedSquares = new ArrayList<ShipSquare>();
 	}
 
-	public abstract Ship clone();
+	// public abstract Ship clone();
+	public abstract Ship opponentCopy();
 
 	public boolean checkCaptainsQuarters(Square location){
 		return location.equals(occupiedSquares.get(captainsIdx).getLocation());
 	}
 
 	//Remember to override for submarines, as they are oddly shaped
-	public void addFeatures(int row, char col, boolean isV){
+	public List<ShipSquare> genSquares(int row, char col, boolean isV){
+		List<ShipSquare> generated = new ArrayList<ShipSquare>();
 		int size = calcSize();
 		for(int i = 0; i < size; i++){
-			occupiedSquares.add(new ShipSquare(new Square(row, col), i == captainsIdx ? 2 : 1));
+			generated.add(new ShipSquare(new Square(row, col), i == captainsIdx ? 2 : 1));
 			if(isV) {
 				row += 1;
 			}
@@ -56,6 +59,8 @@ public abstract class Ship{
 				col += 1;
 			}
 		}
+
+		return generated;
 	}
 
 	public ShipSquare findSquareWithLocation(Square location){
@@ -67,9 +72,7 @@ public abstract class Ship{
 		return null;
 	}
 
-	public int calcSize(){
-		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : 0));
-	}
+	public abstract int calcSize();
 
 	public List<ShipSquare> getOccupiedSquares() {
 		return occupiedSquares;
@@ -95,11 +98,35 @@ public abstract class Ship{
 		this.captainsIdx = captainsIdx;
 	}
 
-	// public int getDepth() {
-	// 	return depth;
-	// }
-	//
-	// public void setDepth (int depth){
-	// 	this.depth = depth;
-	// }
+	public boolean canMove(int rowAdd, int colAdd){
+		for(ShipSquare square: occupiedSquares){
+			if(square.getLocation().getRow() + rowAdd > 10 || square.getLocation().getRow() + rowAdd < 1){return false;}
+			if(square.getLocation().getColumn() + colAdd < 'A' || square.getLocation().getColumn() + colAdd > 'J'){return false;}
+		}
+		return true;
+	}
+
+	//Generate squares which the ship desires to occupy
+	//Override for submarine, as it can collide differently
+	protected boolean collides (Square location, int depth) {
+		if (depth != this.depth) {
+			return false;
+		}
+
+		for(ShipSquare square : occupiedSquares) {
+			if(square.getLocation().equals(location)){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public int getDepth(){
+		return depth;//Most ships by default can only have surface depth
+	}
+
+	public void setDepth(int depth) {
+		this.depth = depth;
+	}
 }

@@ -11,6 +11,7 @@ public class BoardTest {
 	@Test
 	public void testAttack() {
 		Board b = new Board();
+		System.out.println("Placing minesweeper");
 		assertTrue(b.placeShip(ShipFactory.createShip("MINESWEEPER"), 10, 'A', false));
 		assertTrue(b.placeShip(ShipFactory.createShip("DESTROYER"), 9, 'A', false));
 		assertFalse(b.determineWeapon().attack(b, 0, 'A'));
@@ -56,6 +57,58 @@ public class BoardTest {
 				assertTrue(result.getResult() == AtackStatus.EMPTY);
 			}
 		}
+	}
+
+	@Test
+	public void testMove() {
+		Game g = new Game();
+		Submarine s = new Submarine();
+		s.setDepth(-1);
+		g.placeShip(s, 2, 'A', false);
+		g.placeShip(ShipFactory.createShip("MINESWEEPER"), 3, 'A', false);
+		// System.out.println("MOVING UP!");
+		g.move(-1);
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(0).getLocation().equals(new Square(2, 'A')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(1).getLocation().equals(new Square(2, 'B')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(2).getLocation().equals(new Square(2, 'C')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(3).getLocation().equals(new Square(2, 'D')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(4).getLocation().equals(new Square(1, 'C')));
+
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(0).getLocation().equals(new Square(2, 'A')));
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(1).getLocation().equals(new Square(2, 'B')));
+
+		// System.out.println("MOVING DOWN!");
+		g.move(1);
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(0).getLocation().equals(new Square(3, 'A')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(1).getLocation().equals(new Square(3, 'B')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(2).getLocation().equals(new Square(3, 'C')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(3).getLocation().equals(new Square(3, 'D')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(4).getLocation().equals(new Square(2, 'C')));
+
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(0).getLocation().equals(new Square(3, 'A')));
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(1).getLocation().equals(new Square(3, 'B')));
+
+		// System.out.println("MOVING RIGHT!");
+		g.move(2);
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(0).getLocation().equals(new Square(3, 'B')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(1).getLocation().equals(new Square(3, 'C')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(2).getLocation().equals(new Square(3, 'D')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(3).getLocation().equals(new Square(3, 'E')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(4).getLocation().equals(new Square(2, 'D')));
+
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(0).getLocation().equals(new Square(3, 'B')));
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(1).getLocation().equals(new Square(3, 'C')));
+
+		// System.out.println("MOVING LEFT!");
+		g.move(-2);
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(0).getLocation().equals(new Square(3, 'A')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(1).getLocation().equals(new Square(3, 'B')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(2).getLocation().equals(new Square(3, 'C')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(3).getLocation().equals(new Square(3, 'D')));
+		assertTrue(g.getPlayersBoard().getShips().get(0).getOccupiedSquares().get(4).getLocation().equals(new Square(2, 'C')));
+
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(0).getLocation().equals(new Square(3, 'A')));
+		assertTrue(g.getPlayersBoard().getShips().get(1).getOccupiedSquares().get(1).getLocation().equals(new Square(3, 'B')));
 	}
 
 	//Miss tested in testRepeatedAttack
