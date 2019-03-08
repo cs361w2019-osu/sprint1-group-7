@@ -263,11 +263,11 @@ public class Board {
 	//Determine which type of weapon to use depending on number of sunk ships
 	public Weapon determineWeapon(){
 		int sunkShips = ships.size() - calcShipsRemaining();
-		// if(sunkShips >= 2){
-		// 	return new SpaceLaser();
-		// } else {
+		if(sunkShips >= 2){
+			return new SpaceLaser();
+		} else {
 		return new Bomb();
-		//}
+		}
 	}
 
 	protected boolean shipSunk(Ship ship) {

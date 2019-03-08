@@ -15,7 +15,7 @@ public class Bomb implements Weapon {
 		ship = b.findShipWithSquare(location);
 
 		Result result;
-        if(ship != null){
+        if(ship != null && !ship.getShipType().equals("SUBMARINE")){
             //reduce square health
             ShipSquare square = ship.findSquareWithLocation(location);
             boolean sunk = b.shipSunk(ship);
