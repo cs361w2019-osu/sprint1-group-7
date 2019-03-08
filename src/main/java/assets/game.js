@@ -29,10 +29,9 @@ function markHits(board, elementId, surrenderText) {
             className = "hit";
         }else if (attack.result === "SUNK"){
             className = "sink"
-            if (document.getElementById("sonarContainer").style.display != "block"){
+            if (sonarRemaining > 0 && document.getElementById("sonarContainer").style.display != "block"){
                 document.getElementById("sonarContainer").style.display = "block";
             }
-            
         }else if (attack.result === "FOUND"){
             className = "occupied"
         }else if (attack.result === "EMPTY"){
@@ -77,19 +76,32 @@ function redrawGrid() {
 
 function classAssigner(square, i, shipType){
     var vert = 0;
-    var sq = document.getElementById("player").rows[square[i].location.row-1].cells[square[i].location.column.charCodeAt(0) - 'A'.charCodeAt(0)]
-    if((i == (square.length -1) && square[i].location.column != square[i-1].location.column) || (i != (square.length-1)) && square[i].location.column != square[i+1].location.column){vert = 1;}
-    if(vert){
-        if(shipType == "BATTLESHIP"){sq.classList.add("batt" + i);}
-        else if(shipType == "DESTROYER"){sq.classList.add("dest" + i);}
-        else if(shipType == "SUBMARINE"){sq.classList.add("sub" + i);}
-        else{sq.classList.add("mine" + i);}
+    var sq = document.getElementById("player").rows[square[i].location.row-1].cells[square[i].location.column.charCodeAt(0) - 'A'.charCodeAt(0)];
+    if(shipType == "SUBMARINE" && ((i == (square.length - 1) && square[i].location.column != square[i - 2].location.column) || (i < (square.length - 1) && i > 0 && square[i].location.row != square[i-1].location.row) || (i == 0 && square[i].location.row != square[i + 1].location.row))){
+        vert = 1;
+    } else if (shipType != "SUBMARINE" && ((i < (square.length - 1) && square[i].location.row != square[i + 1].location.row) || (i == (square.length - 1) && square[i].location.row != square[i - 1].location.row))){
+        vert = 1;
+    } else {
+        vert = 0;
     }
-    else{
+    //if((i == (square.length -1) && square[i].location.column != square[i-1].location.column) || (i != (square.length-1) && square[i].location.column != square[i+1].location.column)){vert = 1;}
+    if(vert){
         if(shipType == "BATTLESHIP"){sq.classList.add("battv" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("destv" + i);}
-        else if(shipType == "SUBMARINE"){sq.classList.add("subv" + i);}
+        else if(shipType == "SUBMARINE"){
+            sq.classList.add("subv" + i);
+            console.log("subv" + i);
+        }
         else{sq.classList.add("minev" + i);}
+    }
+    else{
+        if(shipType == "BATTLESHIP"){sq.classList.add("batt" + i);}
+        else if(shipType == "DESTROYER"){sq.classList.add("dest" + i);}
+        else if(shipType == "SUBMARINE"){
+            sq.classList.add("sub" + i);
+            console.log("sub" + i);
+        }
+        else{sq.classList.add("mine" + i);}
     }
     sq.classList.add("occupied");
 }
@@ -116,20 +128,21 @@ function toggleShipType() {
     }else if(shipType == "DESTROYER"){
         shipType = "MINESWEEPER";
         registerCellListener(place(2));
-    }
-    else if(shipType == "MINESWEEPER"){
+    }else if(shipType == "MINESWEEPER"){
         shipType = "SUBMARINE";
-        registerCellListener(place(5));
+        registerCellListener(placeSubmarine);
+        document.getElementById("submergedContainer").style.display = "block";
     }
 }
 
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
-    console.log("clicked")
     if (isSetup) {
-
-        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
+        let endpoint = placedShips == 3 ? "/placeSubmarine" : "/place";
+        let context = placedShips == 3 ? {game: game, shipType: shipType, x: row, y: col, isVertical: vertical, depth: document.getElementById("is_submerged").checked ? -1 : 0}
+                : {game: game, shipType: shipType, x: row, y: col, isVertical: vertical};
+        sendXhr("POST", endpoint, context, function(data) {
             game = data;
             redrawGrid();
             placedShips++;
@@ -137,11 +150,11 @@ function cellClick() {
             if (placedShips == 4) {
                 isSetup = false;
                 registerCellListener((e) => {});
+                document.getElementById("submergedContainer").style.display = "none";
                 document.getElementById("verticalContainer").style.display = "none";
             }
         });
     } else if(!document.getElementById("is_sonar").checked) {
-        console.log("atrack");
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
@@ -152,21 +165,13 @@ function cellClick() {
             game = data;
             redrawGrid();
             sonarRemaining--;
-            if(sonarRemaining == 0){
+            if(sonarRemaining <= 0){
                 document.getElementById("is_sonar").checked = false;
                 document.getElementById("sonarContainer").style.display = "none";
             }
         });
     }
 }
-
-function direction_Click() {
-    sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
-        game = data;
-        redrawGrid();
-        console.log(game);
-    });
-}    
 
 function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
@@ -185,33 +190,11 @@ function sendXhr(method, url, data, handler) {
 
 function place(size) {
     return function() {
-        let tempsize = size;
-        if(size == 5){tempsize -= 1;}
-        let cell;
         let row = this.parentNode.rowIndex;
         let col = this.cellIndex;
         vertical = document.getElementById("is_vertical").checked;
         let table = document.getElementById("player");
-        if(size == 5){
-            if(vertical){
-                let tableRow = table.rows[row + 2];
-                let cell;
-                cell = tableRow.cells[col + 1];
-                if(!(cell === undefined)){
-                    cell.classList.toggle("placed");
-                }
-            }
-            else{
-                let tableRow = table.rows[row - 1];
-                let cell;
-                cell = tableRow.cells[col + 2];
-                if(!(cell === undefined)){
-                    cell.classList.toggle("placed");
-                }
-                
-            }
-        }
-        for (let i=0; i<tempsize; i++) {
+        for (let i=0; i<size; i++) {
             let cell;
             if(vertical) {
                 let tableRow = table.rows[row+i];
@@ -229,6 +212,56 @@ function place(size) {
             }
             cell.classList.toggle("placed");
         }
+    }
+}
+
+function placeSubmarine() {
+    let row = this.parentNode.rowIndex;
+    let col = this.cellIndex;
+    vertical = document.getElementById("is_vertical").checked;
+    let table = document.getElementById("player");
+    for (let i=0; i<4; i++) {
+        let cell;
+        if(vertical) {
+            let tableRow = table.rows[row+i];
+            if (tableRow === undefined) {
+                // ship is over the edge; let the back end deal with it
+                break;
+            }
+            cell = tableRow.cells[col];
+        } else {
+            cell = table.rows[row].cells[col+i];
+        }
+        if (cell === undefined) {
+            // ship is over the edge; let the back end deal with it
+            break;
+        }
+        cell.classList.toggle("placed");
+    }
+    if(vertical) {
+        let tableRow = table.rows[row + 2];
+        if (tableRow === undefined) {
+            // ship is over the edge; let the back end deal with it
+            return;
+        }
+        cell = tableRow.cells[col + 1];
+        if (cell === undefined) {
+            // ship is over the edge; let the back end deal with it
+            return;
+        }
+        cell.classList.toggle("placed");
+    } else {
+        let tableRow = table.rows[row - 1];
+        if (tableRow === undefined) {
+            // ship is over the edge; let the back end deal with it
+            return;
+        }
+        cell = tableRow.cells[col + 2];
+        if (cell === undefined) {
+            // ship is over the edge; let the back end deal with it
+            return;
+        }
+        cell.classList.toggle("placed");
     }
 }
 

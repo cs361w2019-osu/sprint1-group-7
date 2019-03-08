@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import cs361.battleships.models.Game;
 import cs361.battleships.models.Ship;
 import cs361.battleships.models.ShipFactory;
+import cs361.battleships.models.Submarine;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -21,7 +22,6 @@ public class ApplicationController {
     }
 
     public Result placeShip(Context context, PlacementGameAction g) {
-        System.out.println("Placing");
         Game game = g.getGame();
         Ship ship = ShipFactory.createShip(g.getShipType());
         boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical());
@@ -32,11 +32,21 @@ public class ApplicationController {
         }
     }
 
+    public Result placeSubmarine(Context context, SubmarinePlacementGameAction g) {
+        Game game = g.getGame();
+        Submarine ship = new Submarine(g.getDepth());
+        ship.setDepth(g.getDepth());
+        boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical());
+        if (result) {
+            return Results.json().render(game);
+        } else {
+            return Results.badRequest();
+        }
+    }
+
     public Result attack(Context context, AttackGameAction g) {
         Game game = g.getGame();
-        System.out.println("INATACK");
         boolean result = game.attack(g.getActionRow(), g.getActionColumn());
-        System.out.println("INATACK");
         if (result) {
             return Results.json().render(game);
         } else {

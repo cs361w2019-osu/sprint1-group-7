@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import static cs361.battleships.models.AtackStatus.*;
 
 public class Game {
 
 	private Board playersBoard = new Board();
 	private Board opponentsBoard = new Board();
-	
-	@JsonProperty int sunkShips = 0;
+	private int sunkShips = 0;
+
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 
@@ -27,15 +23,17 @@ public class Game {
 
 	*/
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		boolean successful = playersBoard.placeShip(ship.clone(), x, y, isVertical);
-		if (!successful)
-		return false;
+		boolean successful = playersBoard.placeShip(ship, x, y, isVertical);
+		if (!successful){
+			return false;
+		}
 
 		boolean opponentPlacedSuccessfully;
+		Ship opponentShip = ship.opponentCopy();
 		do {
 			// AI places random ships, so it might try and place overlapping ships
 			// let it try until it gets it right
-			opponentPlacedSuccessfully = opponentsBoard.placeShip(ship.clone(), randRow(), randCol(), randVertical());
+			opponentPlacedSuccessfully = opponentsBoard.placeShip(opponentShip, randRow(), randCol(), randVertical());
 		} while (!opponentPlacedSuccessfully);
 
 		return true;
@@ -45,8 +43,6 @@ public class Game {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	*/
 	public boolean attack(int x, char  y) {
-		
-		System.out.println("ATTAKINGFROMGAME");
 		boolean playerAttack = opponentsBoard.determineWeapon().attack(opponentsBoard, x, y);
 		if (!playerAttack) {
 			return false;
@@ -58,6 +54,7 @@ public class Game {
 		} while(!opponentAttackResult);
 
 		sunkShips = opponentsBoard.sunkenShips();
+
 		return true;
 	}
 
@@ -86,11 +83,17 @@ public class Game {
 	public Board getOpponentsBoard(){
 		return opponentsBoard;
 	}
+	public int getSunkShips() {
+		return sunkShips;
+	}
 	public void setPlayersBoard(Board b){
 		playersBoard = b;
 	}
 	public void setOpponentsBoard(Board b){
 		opponentsBoard = b;
+	}
+	public void setSunkShips(int sunkShips) {
+		this.sunkShips = sunkShips;
 	}
 
 	public boolean move(int direction){
@@ -102,21 +105,25 @@ public class Game {
 		else if(direction == 2){colAdd = 1;}
 		else{rowAdd = direction;}
 		for(Ship curShip : playersBoard.getShips()){
-			bad = false;
 			if(curShip.canMove(rowAdd, colAdd)){
-				if(!(curShip.getShipType().equals("SUBMARINE"))){
-					for(ShipSquare square : curShip.getOccupiedSquares()){
-						Square newLoc = new Square(square.getLocation());
-						newLoc.setRow(newLoc.getRow() + rowAdd);
-						newLoc.setColumn((char)(newLoc.getColumn() + colAdd));
-						for(Ship tmpShip: playersBoard.getShips()){
-							if(!(tmpShip.getShipType().equals(curShip.getShipType())) && !(tmpShip.getShipType().equals("SUBMARINE"))){
-								if(tmpShip.findSquareWithLocation(newLoc) != null){bad = true;}
-							}
+				boolean collides = false;
+				for(ShipSquare square : curShip.getOccupiedSquares()) {
+					for(Ship collidingShip : playersBoard.getShips()){
+						if(collidingShip.getShipType().equals(curShip.getShipType())){
+							continue;
+						}
+						if(collidingShip.collides(new Square(square.getLocation().getRow() + rowAdd, (char) (square.getLocation().getColumn() + colAdd)), curShip.getDepth())){
+							collides = true;
+							System.out.println("Colliding ship!");
+							break;
 						}
 					}
+					if(collides){
+						break;
+					}
 				}
-				if(bad == false){
+
+				if(!collides) {
 					for(ShipSquare square : curShip.getOccupiedSquares()){
 						Square newLoc = new Square(square.getLocation());
 						newLoc.setRow(newLoc.getRow() + rowAdd);
