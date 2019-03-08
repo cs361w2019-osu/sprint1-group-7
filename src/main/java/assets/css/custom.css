@@ -150,6 +150,84 @@ body{
 	margin:0;
 }
 
+.subv0.occupied{
+
+	background-image: url("../sub1.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	border: 0px;
+	-webkit-transform: rotate(-90deg);
+}
+
+.subv1.occupied{
+	border: 0px;
+	background-image: url("../sub2.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+}
+
+.subv2.occupied{
+	background-image: url("../sub3.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	border: 0px;
+}
+
+.subv3.occupied{
+	border: 0px;
+	background-image: url("../sub4.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+}
+
+.subv4.occupied{
+	border: 0px;
+	background-image: url("../sub5.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+}
+
+.sub0.occupied{
+	background-image: url("../sub1.jpg");
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	border: 0px;
+	
+}
+
+.sub1.occupied{
+	background-image: url("../sub2.jpg");
+	background-size: 30px 30px;
+	border: 0px;
+	background-repeat: no-repeat;
+	-webkit-transform: rotate(-90deg);
+}
+.sub2.occupied{
+	background-image: url("../sub3.jpg");
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	border: 0px;
+	-webkit-transform: rotate(-90deg);
+}
+
+.sub3.occupied{
+	background-image: url("../sub4.jpg");
+	background-size: 30px 30px;
+	border: 0px;
+	background-repeat: no-repeat;
+	-webkit-transform: rotate(-90deg);
+}
+.sub4.occupied{
+	background-image: url("../sub5.jpg");
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	border: 0px;
+	-webkit-transform: rotate(-90deg);
+}
+
 .minev0.occupied{
 	background-image: url("../frtm.jpg");
 	background-size: 100%;

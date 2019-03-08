@@ -34,7 +34,9 @@ public class ApplicationController {
 
     public Result attack(Context context, AttackGameAction g) {
         Game game = g.getGame();
+        System.out.println("INATACK");
         boolean result = game.attack(g.getActionRow(), g.getActionColumn());
+        System.out.println("INATACK");
         if (result) {
             return Results.json().render(game);
         } else {

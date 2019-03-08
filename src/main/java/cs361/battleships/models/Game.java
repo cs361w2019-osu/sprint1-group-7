@@ -40,6 +40,7 @@ public class Game {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	*/
 	public boolean attack(int x, char  y) {
+		System.out.println("ATTAKINGFROMGAME");
 		boolean playerAttack = opponentsBoard.determineWeapon().attack(opponentsBoard, x, y);
 		if (!playerAttack) {
 			return false;

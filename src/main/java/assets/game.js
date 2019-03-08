@@ -79,7 +79,7 @@ function classAssigner(square, i, shipType){
     else{
         if(shipType == "BATTLESHIP"){sq.classList.add("battv" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("destv" + i);}
-        else if(shipType == "SUBMARINE"){sq.classList.add("sub" + i);}
+        else if(shipType == "SUBMARINE"){sq.classList.add("subv" + i);}
         else{sq.classList.add("minev" + i);}
     }
     sq.classList.add("occupied");
@@ -117,6 +117,7 @@ function toggleShipType() {
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
+    console.log("clicked")
     if (isSetup) {
 
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
@@ -131,6 +132,7 @@ function cellClick() {
             }
         });
     } else if(!document.getElementById("is_sonar").checked) {
+        console.log("atrack");
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();

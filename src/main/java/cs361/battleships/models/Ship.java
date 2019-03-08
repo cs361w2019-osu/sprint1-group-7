@@ -22,7 +22,8 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = Minesweeper.class, name = "Minesweeper"),
 	@JsonSubTypes.Type(value = Destroyer.class, name = "Destroyer"),
-	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship")
+	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship"),
+	@JsonSubTypes.Type(value = Submarine.class, name = "Submarine")
 })
 public abstract class Ship{
 
@@ -31,7 +32,7 @@ public abstract class Ship{
 	//Should be 0 in minesweeper, 1 in destroyer, and 2 in battleship class. Should be used in function which takes a square as a parameter and determines
 	//...if this ship's captains quarters is at that exact location. Returns true if so, false otherwise.
 	protected int captainsIdx;
-	// protected int depth;//0 is ocean surface, -1 is submarine
+	protected int depth;//0 is ocean surface, -1 is submarine
 
 
 	public Ship(){

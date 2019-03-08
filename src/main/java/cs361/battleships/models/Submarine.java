@@ -8,7 +8,7 @@ public class Submarine extends Ship{
         super();
         shipType = "SUBMARINE";
         Random random = new Random();
-        captainsIdx = random.nextInt(5);
+        captainsIdx = random.nextInt(4);
     }
 
     public Ship clone() {
@@ -27,20 +27,23 @@ public class Submarine extends Ship{
         char tempcol;
         if(isV){
             tempcol = (char)(col + 1);
-            occupiedSquares.add(new ShipSquare(new Square(row+2, tempcol), 5 == captainsIdx ? 2 : 1));
+            occupiedSquares.add(new ShipSquare(new Square(row+2, tempcol), 1));
         }
         else{
             tempcol = (char)(col + 2);
-            occupiedSquares.add(new ShipSquare(new Square(row-1, tempcol), 5 == captainsIdx ? 2 : 1));
+            occupiedSquares.add(new ShipSquare(new Square(row-1, tempcol), 1));
         }
 		for(int i = 0; i < size; i++){
-			occupiedSquares.add(new ShipSquare(new Square(row, col), i == captainsIdx ? 2 : 1));
+            System.out.print(i); System.out.print(" "); System.out.print(captainsIdx);
+            occupiedSquares.add(new ShipSquare(new Square(row, col), i == captainsIdx ? 2 : 1));
 			if(isV) {
 				row += 1;
 			}
 			else {
 				col += 1;
 			}
-		}
+        }
+        captainsIdx += 1;
+        return;
 	}
 }
