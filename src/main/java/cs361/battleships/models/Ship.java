@@ -22,7 +22,8 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = Minesweeper.class, name = "Minesweeper"),
 	@JsonSubTypes.Type(value = Destroyer.class, name = "Destroyer"),
-	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship")
+	@JsonSubTypes.Type(value = Battleship.class, name = "Battleship"),
+		@JsonSubTypes.Type(value = Submarine.class, name = "Submarine")
 })
 public abstract class Ship{
 
@@ -68,7 +69,7 @@ public abstract class Ship{
 	}
 
 	public int calcSize(){
-		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : 0));
+		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : (shipType.equals("SUBMARINE") ? 4 : 0)));
 	}
 
 	public List<ShipSquare> getOccupiedSquares() {

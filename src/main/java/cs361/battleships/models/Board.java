@@ -27,6 +27,20 @@ public class Board {
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		int size = ship.calcSize();
 
+		if (ship.shipType.equals("SUBMARINE")){
+			for (int i=0; i< size;i++){
+					ship.occupiedSquares.add(new ShipSquare(new Square(x,y),i == ship.captainsIdx ? 2:1));
+				if (isVertical){
+					x +=1;
+				}
+				else {
+					y +=1;
+				}
+			}
+
+		}
+
+
 		if(isVertical && x >= 1 && x + size - 1 <= 10){//Vertical and valid placement
 			//Check if any of the squares are occupied by existing ships
 			for(Ship curShip : ships){

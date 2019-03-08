@@ -73,12 +73,14 @@ function classAssigner(square, i, shipType){
     if(vert){
         if(shipType == "BATTLESHIP"){sq.classList.add("batt" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("dest" + i);}
-        else{sq.classList.add("mine" + i);}
+        //else if (shipType == "MINESWEEPER"{sq.classList.add("mine" + i);}
+        else {sq.classList.add("mine" + i);}
     }
     else{
         if(shipType == "BATTLESHIP"){sq.classList.add("battv" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("destv" + i);}
-        else{sq.classList.add("minev" + i);}
+       //else if (shipType == "MINESWEEPER"{sq.classList.add("mine" + i);}
+        else {sq.classList.add("mine" + i);}
     }
     sq.classList.add("occupied");
 }
@@ -100,10 +102,13 @@ function registerCellListener(f) {
 
 function toggleShipType() {
     if(shipType == "BATTLESHIP"){
+        shipType = "SUBMARINE";
+        registerCellListener(place(4));
+    }else if(shipType == "SUBMARINE"){
         shipType = "DESTROYER";
         registerCellListener(place(3));
-    }else if(shipType == "DESTROYER"){
-        shipType = "MINESWEEPER";
+    }else{
+        shipType == "MINESWEEPER";
         registerCellListener(place(2));
     }
 }
@@ -118,7 +123,7 @@ function cellClick() {
             redrawGrid();
             placedShips++;
             toggleShipType();
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 isSetup = false;
                 registerCellListener((e) => {});
                 document.getElementById("verticalContainer").style.display = "none";
