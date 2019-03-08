@@ -90,10 +90,6 @@ td:hover {
 	background-color: gray;
 }
 
-html{
-    background-image: url("b1.jpg")
-}
-
 #sonarContainer{
 	display: none;
 }
