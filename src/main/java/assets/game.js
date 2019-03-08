@@ -29,13 +29,10 @@ function markHits(board, elementId, surrenderText) {
             className = "hit";
         }else if (attack.result === "SUNK"){
             className = "sink"
-            sinkCount += 2;
             if (document.getElementById("sonarContainer").style.display != "block"){
                 document.getElementById("sonarContainer").style.display = "block";
             }
-            if (sinkCount >= 2 && document.getElementById("moveContainer").style.display != "block"){
-                document.getElementById("moveContainer").style.display = "block";
-            }
+            
         }else if (attack.result === "FOUND"){
             className = "occupied"
         }else if (attack.result === "EMPTY"){
@@ -63,6 +60,11 @@ function redrawGrid() {
     makeGrid(document.getElementById("player"), true);
     if (game === undefined) {
         return;
+    }
+
+    sinkCount = game.sunkShips;
+    if (sinkCount >= 2 && timesDirectionClicked == 0 && document.getElementById("moveContainer").style.display != "block" && document.getElementById("northContainer").style.display != "block"){
+        document.getElementById("moveContainer").style.display = "block";
     }
 
     game.playersBoard.ships.forEach((ship) => {
@@ -249,13 +251,22 @@ function revealDirections(){
 };
 
 function directionClick(elem) {
-    direction = parseInt(elem.target.getAttribute("num"));
-    console.log("Direction: ", direction)
-    sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
-        game = data;
-        redrawGrid();
-        console.log(game);
-    });
+     if(timesDirectionClicked < 2){
+        timesDirectionClicked += 1;
+        direction = parseInt(elem.target.getAttribute("num"));
+        console.log("Direction: ", direction)
+        sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
+            game = data;
+            redrawGrid();
+            console.log(game);
+        });
+        if(timesDirectionClicked == 2){
+            document.getElementById("eastContainer").style.display = "none";
+            document.getElementById("westContainer").style.display = "none";
+            document.getElementById("northContainer").style.display = "none";
+            document.getElementById("southContainer").style.display = "none";
+        }
+    }
 }
 
 var moveWake = document.getElementById("moveContainer");

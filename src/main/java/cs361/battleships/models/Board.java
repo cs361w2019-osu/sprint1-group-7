@@ -12,13 +12,16 @@ import java.lang.Math;
 public class Board {
 	private List<Ship> ships;
 	private List<Result> attacks;
-
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	*/
 	public Board() {
 		ships = new ArrayList<Ship>();
 		attacks = new ArrayList<Result>();
+	}
+
+	public int sunkenShips(){
+		return (ships.size() - calcShipsRemaining());
 	}
 
 	/*

@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import static cs361.battleships.models.AtackStatus.*;
 
 public class Game {
 
 	private Board playersBoard = new Board();
 	private Board opponentsBoard = new Board();
-
+	
+	@JsonProperty int sunkShips = 0;
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 
@@ -40,6 +45,7 @@ public class Game {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	*/
 	public boolean attack(int x, char  y) {
+		
 		System.out.println("ATTAKINGFROMGAME");
 		boolean playerAttack = opponentsBoard.determineWeapon().attack(opponentsBoard, x, y);
 		if (!playerAttack) {
@@ -51,11 +57,8 @@ public class Game {
 			opponentAttackResult = playersBoard.determineWeapon().attack(playersBoard, randRow(), randCol());
 		} while(!opponentAttackResult);
 
+		sunkShips = opponentsBoard.sunkenShips();
 		return true;
-	}
-
-	public boolean move(int direction){
-		return false;
 	}
 
 	public boolean sonar (int x, char y) {
@@ -88,5 +91,41 @@ public class Game {
 	}
 	public void setOpponentsBoard(Board b){
 		opponentsBoard = b;
+	}
+
+	public boolean move(int direction){
+		System.out.println("entered game");
+		int rowAdd = 0;
+		int colAdd = 0;
+		boolean bad = false;
+		if(direction == -2){colAdd = -1;}
+		else if(direction == 2){colAdd = 1;}
+		else{rowAdd = direction;}
+		for(Ship curShip : playersBoard.getShips()){
+			bad = false;
+			if(curShip.canMove(rowAdd, colAdd)){
+				if(!(curShip.getShipType().equals("SUBMARINE"))){
+					for(ShipSquare square : curShip.getOccupiedSquares()){
+						Square newLoc = new Square(square.getLocation());
+						newLoc.setRow(newLoc.getRow() + rowAdd);
+						newLoc.setColumn((char)(newLoc.getColumn() + colAdd));
+						for(Ship tmpShip: playersBoard.getShips()){
+							if(!(tmpShip.getShipType().equals(curShip.getShipType())) && !(tmpShip.getShipType().equals("SUBMARINE"))){
+								if(tmpShip.findSquareWithLocation(newLoc) != null){bad = true;}
+							}
+						}
+					}
+				}
+				if(bad == false){
+					for(ShipSquare square : curShip.getOccupiedSquares()){
+						Square newLoc = new Square(square.getLocation());
+						newLoc.setRow(newLoc.getRow() + rowAdd);
+						newLoc.setColumn((char)(newLoc.getColumn() + colAdd));
+						square.setLocation(newLoc);
+					}
+				}
+			}
+		}
+		return true;
 	}
 }

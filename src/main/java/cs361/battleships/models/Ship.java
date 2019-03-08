@@ -64,7 +64,6 @@ public abstract class Ship{
 			if(square.getLocation().equals(location))
 				return square;
 		}
-
 		return null;
 	}
 
@@ -94,6 +93,14 @@ public abstract class Ship{
 
 	public void setCaptainsIdx(int captainsIdx){
 		this.captainsIdx = captainsIdx;
+	}
+
+	public boolean canMove(int rowAdd, int colAdd){
+		for(ShipSquare square: occupiedSquares){
+			if(square.getLocation().getRow() + rowAdd > 10 || square.getLocation().getRow() + rowAdd < 1){return false;}
+			if(square.getLocation().getColumn() + colAdd < 'A' || square.getLocation().getColumn() + colAdd > 'J'){return false;}
+		}
+		return true;
 	}
 
 	// public int getDepth() {
