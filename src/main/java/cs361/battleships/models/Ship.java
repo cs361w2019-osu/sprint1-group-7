@@ -68,7 +68,7 @@ public abstract class Ship{
 	}
 
 	public int calcSize(){
-		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : 0));
+		return shipType.equals("MINESWEEPER") ? 2 : (shipType.equals("DESTROYER") ? 3 : (shipType.equals("BATTLESHIP") ? 4 : (shipType.equals("SUBMARINE")) ? 4 : 0));
 	}
 
 	public List<ShipSquare> getOccupiedSquares() {

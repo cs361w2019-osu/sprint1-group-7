@@ -73,11 +73,13 @@ function classAssigner(square, i, shipType){
     if(vert){
         if(shipType == "BATTLESHIP"){sq.classList.add("batt" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("dest" + i);}
+        else if(shipType == "SUBMARINE"){sq.classList.add("sub" + i);}
         else{sq.classList.add("mine" + i);}
     }
     else{
         if(shipType == "BATTLESHIP"){sq.classList.add("battv" + i);}
         else if(shipType == "DESTROYER"){sq.classList.add("destv" + i);}
+        else if(shipType == "SUBMARINE"){sq.classList.add("sub" + i);}
         else{sq.classList.add("minev" + i);}
     }
     sq.classList.add("occupied");
@@ -106,6 +108,10 @@ function toggleShipType() {
         shipType = "MINESWEEPER";
         registerCellListener(place(2));
     }
+    else if(shipType == "MINESWEEPER"){
+        shipType = "SUBMARINE";
+        registerCellListener(place(5));
+    }
 }
 
 function cellClick() {
@@ -118,7 +124,7 @@ function cellClick() {
             redrawGrid();
             placedShips++;
             toggleShipType();
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 isSetup = false;
                 registerCellListener((e) => {});
                 document.getElementById("verticalContainer").style.display = "none";
@@ -160,11 +166,33 @@ function sendXhr(method, url, data, handler) {
 
 function place(size) {
     return function() {
+        let tempsize = size;
+        if(size == 5){tempsize -= 1;}
+        let cell;
         let row = this.parentNode.rowIndex;
         let col = this.cellIndex;
         vertical = document.getElementById("is_vertical").checked;
         let table = document.getElementById("player");
-        for (let i=0; i<size; i++) {
+        if(size == 5){
+            if(vertical){
+                let tableRow = table.rows[row + 2];
+                let cell;
+                cell = tableRow.cells[col + 1];
+                if(!(cell === undefined)){
+                    cell.classList.toggle("placed");
+                }
+            }
+            else{
+                let tableRow = table.rows[row - 1];
+                let cell;
+                cell = tableRow.cells[col + 2];
+                if(!(cell === undefined)){
+                    cell.classList.toggle("placed");
+                }
+                
+            }
+        }
+        for (let i=0; i<tempsize; i++) {
             let cell;
             if(vertical) {
                 let tableRow = table.rows[row+i];

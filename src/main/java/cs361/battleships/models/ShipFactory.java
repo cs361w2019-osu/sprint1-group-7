@@ -6,6 +6,8 @@ public class ShipFactory{
             return new Minesweeper();
         } else if (shipType.equals("DESTROYER")) {
             return new Destroyer();
+        } else if(shipType.equals("SUBMARINE")){
+            return new Submarine();
         } else{
             return new Battleship();
         }

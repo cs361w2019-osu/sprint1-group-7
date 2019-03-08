@@ -26,44 +26,70 @@ public class Board {
 	*/
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		int size = ship.calcSize();
-
-		if(isVertical && x >= 1 && x + size - 1 <= 10){//Vertical and valid placement
-			//Check if any of the squares are occupied by existing ships
-			for(Ship curShip : ships){
-				if(curShip.getShipType().equals(ship.getShipType())){
-					return false;//No two of same ship type
-				}
-				for(ShipSquare square : curShip.getOccupiedSquares()){
-					int row = square.getLocation().getRow();
-					char col = square.getLocation().getColumn();
-					if(col == y && row >= x && row <= x + size - 1){
-						return false;//This square is already occupied
+		System.out.println(ship.getShipType());
+		if(ship.getShipType().equals("SUBMARINE")){
+			System.out.println("HEY");
+			if(isVertical && x >= 1 && x + size - 1 <= 10 && y > 'A'){
+				for(Ship curShip : ships){
+					if(curShip.getShipType().equals(ship.getShipType())){
+						return false;//No two of same ship type
 					}
 				}
+				ship.addFeatures(x, y, isVertical);
+				ships.add(ship);
+				return true;
 			}
+			else if(y >= 'A' && y + size - 1 <= 'J' && x < 10){
+				for(Ship curShip : ships){
+					if(curShip.getShipType().equals(ship.getShipType())){
+						return false;//No two of same ship type
+					}
+				}
+				ship.addFeatures(x, y, isVertical);
+				ships.add(ship);
+				return true;
+			}
+			return false;
+		}
+		else{
+			if(isVertical && x >= 1 && x + size - 1 <= 10){//Vertical and valid placement
+				//Check if any of the squares are occupied by existing ships
+				for(Ship curShip : ships){
+					if(curShip.getShipType().equals(ship.getShipType())){
+						return false;//No two of same ship type
+					}
+					for(ShipSquare square : curShip.getOccupiedSquares()){
+						int row = square.getLocation().getRow();
+						char col = square.getLocation().getColumn();
+						if(col == y && row >= x && row <= x + size - 1){
+							return false;//This square is already occupied
+						}
+					}
+				}
+				ship.addFeatures(x, y, isVertical);
+				ships.add(ship);
+				return true;
+			}
+			else if(!isVertical && y >= 'A' && y + size - 1 <= 'J'){//Horizontal and valid placement
+				//Check if any of the squares are occupied by existing ships
+				for(Ship curShip : ships){
+					if(curShip.getShipType().equals(ship.getShipType())){
+						return false;
+					}
+					for(ShipSquare square : curShip.getOccupiedSquares()){
+						int row = square.getLocation().getRow();
+						char col = square.getLocation().getColumn();
+						if(row == x && col >= y && col <= y + size - 1){
+							return false;//This square is already occupied
+						}
+					}
+				}
 			ship.addFeatures(x, y, isVertical);
 			ships.add(ship);
 			return true;
-		}
-		else if(!isVertical && y >= 'A' && y + size - 1 <= 'J'){//Horizontal and valid placement
-			//Check if any of the squares are occupied by existing ships
-			for(Ship curShip : ships){
-				if(curShip.getShipType().equals(ship.getShipType())){
-					return false;
-				}
-				for(ShipSquare square : curShip.getOccupiedSquares()){
-					int row = square.getLocation().getRow();
-					char col = square.getLocation().getColumn();
-					if(row == x && col >= y && col <= y + size - 1){
-						return false;//This square is already occupied
-					}
-				}
 			}
-			ship.addFeatures(x, y, isVertical);
-			ships.add(ship);
-			return true;
+		
 		}
-
 		return false;
 	}
 
