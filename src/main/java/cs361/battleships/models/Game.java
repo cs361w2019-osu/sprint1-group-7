@@ -54,6 +54,10 @@ public class Game {
 		return true;
 	}
 
+	public boolean move(int direction){
+		return false;
+	}
+
 	public boolean sonar (int x, char y) {
 		return opponentsBoard.sonar(x, y);
 	}

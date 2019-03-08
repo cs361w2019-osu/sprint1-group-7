@@ -4,6 +4,9 @@ var game;
 var shipType = "BATTLESHIP";
 var vertical;
 var sonarRemaining = 2;
+var direction;
+var timesDirectionClicked = 0;
+var sinkCount = 0;
 
 function makeGrid(table, isPlayer) {
     for (i=0; i<10; i++) {
@@ -26,8 +29,12 @@ function markHits(board, elementId, surrenderText) {
             className = "hit";
         }else if (attack.result === "SUNK"){
             className = "sink"
+            sinkCount += 2;
             if (document.getElementById("sonarContainer").style.display != "block"){
                 document.getElementById("sonarContainer").style.display = "block";
+            }
+            if (sinkCount >= 2 && document.getElementById("moveContainer").style.display != "block"){
+                document.getElementById("moveContainer").style.display = "block";
             }
         }else if (attack.result === "FOUND"){
             className = "occupied"
@@ -151,6 +158,14 @@ function cellClick() {
     }
 }
 
+function direction_Click() {
+    sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
+        game = data;
+        redrawGrid();
+        console.log(game);
+    });
+}    
+
 function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
     req.addEventListener("load", function(event) {
@@ -223,3 +238,33 @@ function initGame() {
         game = data;
     });
 };
+
+function revealDirections(){
+    console.log("doing the function");
+    document.getElementById("moveContainer").style.display = "none";
+    document.getElementById("eastContainer").style.display = "block";
+    document.getElementById("westContainer").style.display = "block";
+    document.getElementById("northContainer").style.display = "block";
+    document.getElementById("southContainer").style.display = "block";
+};
+
+function directionClick(elem) {
+    direction = parseInt(elem.target.getAttribute("num"));
+    console.log("Direction: ", direction)
+    sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
+        game = data;
+        redrawGrid();
+        console.log(game);
+    });
+}
+
+var moveWake = document.getElementById("moveContainer");
+moveWake.addEventListener("click", revealDirections);
+var eastTrigger = document.getElementById("eastContainer");
+eastTrigger.addEventListener("click", directionClick);
+var westTrigger = document.getElementById("westContainer");
+westTrigger.addEventListener("click", directionClick);
+var northTrigger = document.getElementById("northContainer");
+northTrigger.addEventListener("click", directionClick);
+var southTrigger = document.getElementById("southContainer");
+southTrigger.addEventListener("click", directionClick);

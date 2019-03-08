@@ -53,4 +53,14 @@ public class ApplicationController {
             return Results.badRequest();
         }
     }
+
+    public Result move(Context context, MoveAction g){
+        Game game = g.getGame();
+        boolean result = game.move(g.getDirection());
+        if (result) {
+            return Results.json().render(game);
+        } else {
+            return Results.badRequest();
+        }
+    }
 }
