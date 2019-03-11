@@ -92,9 +92,9 @@ td:hover {
 	background-color: gray;
 }
 
-html{
+/*html{
     background-image: url("b1.jpg")
-}
+}*/
 
 #sonarContainer, #submergedContainer {
 	display: none;
